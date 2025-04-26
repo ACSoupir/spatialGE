@@ -34,17 +34,18 @@ In this tutorial, the functions `STenrich`, `STclust`, and `STgradient` will be 
 
 <summary>**How is `spatialGE` installed? **</summary>
 
-The `spatialGE` repository is available at GitHub and can be installed via `devtools`. To install `devtools` (in case it is not already installed in your R), please run the following code:
+The `spatialGE` repository is available at the Comprehensive R Archive Network (CRAN) repository and can be installed via `install.packages`:
 
-```{r install_devtools}
-if("devtools" %in% rownames(installed.packages()) == FALSE){
-  install.packages("devtools")
-}
+```{r cran_install}
+# install.packages('spatialGE')
 ```
 
-After making sure `devtools` is installed, proceed to install `spatialGE`:
+A development version is available at GitHub and can be installed via `devtools`:
+```{r install_devtools}
+# if("devtools" %in% rownames(installed.packages()) == FALSE){
+#   install.packages("devtools")
+# }
 
-```{r install_spatialGE, eval=T}
 # devtools::install_github("fridleylab/spatialGE")
 ```
 

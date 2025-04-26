@@ -24,19 +24,22 @@ knitr::include_graphics(c("img/dir_structure.png", "img/metadata_file.png"))
 
 The package ***`spatialGE`*** provides a collection of tools for the visualization of gene expression from spatially-resolved transcriptomic experiments. The data input methods have been designed so that any data can be analyzed as long as it contains gene expression counts per spot or cell, and the spatial coordinates of those spots or cells. Specialized data input options are available to allow interoperability with workflows such as [*Space Ranger*](https://support.10xgenomics.com/spatial-gene-expression/software/pipelines/latest/what-is-space-ranger).
 
+This tutorial covers basic analysis possible within spatialGE. Tutorials explaining more advanced spatial analyses and other data input types can be found at the [spatialGE_Data GitHub repository](https://github.com/FridleyLab/spatialGE_Data). A point-and-click, user-friendly interface is also available at https://spatialge.moffitt.org.
+
 ## Installation
 
-The `spatialGE` repository is available at GitHub and can be installed via `devtools`. To install `devtools` (in case it is not already installed in your R), please run the following code:
+The `spatialGE` repository is available at the Comprehensive R Archive Network (CRAN) repository and can be installed via `install.packages`:
 
-```{r install_devtools}
-if("devtools" %in% rownames(installed.packages()) == FALSE){
-  install.packages("devtools")
-}
+```{r cran_install}
+# install.packages('spatialGE')
 ```
 
-After making sure `devtools` is installed, proceed to install `spatialGE`:
+A development version is available at GitHub and can be installed via `devtools`:
+```{r install_devtools}
+# if("devtools" %in% rownames(installed.packages()) == FALSE){
+#   install.packages("devtools")
+# }
 
-```{r install_spatialGE, eval=T}
 #devtools::install_github("fridleylab/spatialGE")
 ```
 

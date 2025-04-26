@@ -225,6 +225,9 @@ create_listw_from_knn = function(x=NULL, ks=NULL){
 #
 create_listw_from_dist = function(x=NULL, cores=NULL){
   # Define cores available
+  if(.Platform$OS.type == 'windows'){
+    cores = 1
+  }
   if(is.null(cores)){
     cores = count_cores(length(x@spatial_meta))
   } else{
