@@ -9,7 +9,7 @@ compare_SThet(
   samplemeta = NULL,
   genes = NULL,
   color_by = NULL,
-  categorical = T,
+  categorical = TRUE,
   color_pal = "muted",
   ptsize = 1
 )

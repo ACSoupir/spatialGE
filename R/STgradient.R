@@ -50,7 +50,7 @@
 #
 #
 STgradient = function(x=NULL, samples=NULL, topgenes=2000, annot=NULL, ref=NULL, exclude=NULL,
-                      out_rm=F, limit=NULL, distsumm='min', min_nb=3, robust=T, nb_dist_thr=NULL, log_dist=F, cores=NULL){
+                      out_rm=FALSE, limit=NULL, distsumm='min', min_nb=3, robust=TRUE, nb_dist_thr=NULL, log_dist=FALSE, cores=NULL){
 
   # To prevent NOTES in R CMD check
   . = NULL

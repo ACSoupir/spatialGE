@@ -30,7 +30,7 @@
 #
 #
 compare_SThet = function(x=NULL, samplemeta=NULL, genes=NULL,  color_by=NULL,
-                         categorical=T, color_pal="muted", ptsize=1) {
+                         categorical=TRUE, color_pal="muted", ptsize=1) {
 
   # To prevent NOTES in R CMD check
   . = NULL

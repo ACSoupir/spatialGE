@@ -46,7 +46,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom methods as is new
 #'
-pseudobulk_samples = function(x=NULL, max_var_genes=5000, calc_umap=F){
+pseudobulk_samples = function(x=NULL, max_var_genes=5000, calc_umap=FALSE){
 
   # Test if an STList has been input.
   if(is.null(x) | !is(x, 'STlist')){

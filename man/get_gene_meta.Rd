@@ -4,7 +4,7 @@
 \alias{get_gene_meta}
 \title{get_gene_meta: Extract gene-level metadata and statistics}
 \usage{
-get_gene_meta(x = NULL, sthet_only = F)
+get_gene_meta(x = NULL, sthet_only = FALSE)
 }
 \arguments{
 \item{x}{an STlist}

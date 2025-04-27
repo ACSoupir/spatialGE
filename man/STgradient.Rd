@@ -11,13 +11,13 @@ STgradient(
   annot = NULL,
   ref = NULL,
   exclude = NULL,
-  out_rm = F,
+  out_rm = FALSE,
   limit = NULL,
   distsumm = "min",
   min_nb = 3,
-  robust = T,
+  robust = TRUE,
   nb_dist_thr = NULL,
-  log_dist = F,
+  log_dist = FALSE,
   cores = NULL
 )
 }

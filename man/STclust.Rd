@@ -12,7 +12,7 @@ STclust(
   linkage = "ward.D2",
   ks = "dtc",
   topgenes = 2000,
-  deepSplit = F,
+  deepSplit = FALSE,
   cores = NULL
 )
 }

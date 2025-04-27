@@ -17,7 +17,7 @@ STdiff(
   test_type = "mm",
   sp_topgenes = 0.2,
   clusters = NULL,
-  pairwise = F,
+  pairwise = FALSE,
   verbose = 1L,
   cores = NULL
 )

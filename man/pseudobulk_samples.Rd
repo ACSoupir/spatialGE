@@ -4,7 +4,7 @@
 \alias{pseudobulk_samples}
 \title{pseudobulk_samples: Aggregates counts into "pseudo bulk" samples}
 \usage{
-pseudobulk_samples(x = NULL, max_var_genes = 5000, calc_umap = F)
+pseudobulk_samples(x = NULL, max_var_genes = 5000, calc_umap = FALSE)
 }
 \arguments{
 \item{x}{an STlist.}

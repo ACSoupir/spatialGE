@@ -18,7 +18,11 @@ Authors@R: c(
            email = "Brooke.Fridley@Moffitt.org",
            comment = c(ORCID = "0000-0001-7739-7956"))
            )
-Description: Visualization and analysis of spatially resolved transcriptomics data. The functions in spatialGE allow for the study of gene expression in tissue sections via spatial interpolation, RNA-Seq data deconvolution, and autocorrelation statistics, as well as correlation with clinical/phenotype data.
+Description: Visualization and analysis of spatially resolved transcriptomics data. The 'spatialGE'
+	R package provides methods for visualizing and analyzing spatially resolved transcriptomics data, 
+	such as 10X Visium, CosMx, or csv/tsv gene expression matrices. It includes tools for spatial 
+	interpolation, autocorrelation analysis, tissue domain detection, gene set enrichment, and 
+	differential expression analysis using spatial mixed models.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

@@ -312,7 +312,7 @@ create_listw_from_dist = function(x=NULL, cores=NULL){
 #'
 #' @export
 #
-get_gene_meta = function(x=NULL, sthet_only=F){
+get_gene_meta = function(x=NULL, sthet_only=FALSE){
   # Test if an STList has been input.
   if(is.null(x) | !is(x, 'STlist')){
     stop("The input must be a STlist.")

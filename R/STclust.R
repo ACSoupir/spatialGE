@@ -60,7 +60,7 @@
 #' @importFrom methods as is new
 #' @importFrom stats as.dist complete.cases cutree dist hclust prcomp sd na.omit
 #
-STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', linkage='ward.D2', ks='dtc', topgenes=2000, deepSplit=F, cores=NULL){
+STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', linkage='ward.D2', ks='dtc', topgenes=2000, deepSplit=FALSE, cores=NULL){
 
   # To prevent NOTES in R CMD check
   . = NULL
