@@ -17,7 +17,8 @@ STenrich(
   min_genes = 5,
   pval_adj_method = "BH",
   seed = 12345,
-  cores = NULL
+  cores = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -56,6 +57,8 @@ Options are the same as that of \code{p.adjust}. Default is 'BH'}
 
 \item{cores}{the number of cores used during parallelization. If NULL (default),
 the number of cores is defined automatically}
+
+\item{verbose}{either logical or an integer (0, 1, or 2) to increase verbosity}
 }
 \value{
 a list of data frames with the results of the test

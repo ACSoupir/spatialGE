@@ -19,6 +19,7 @@
 #' @param cores integer indicating the number of cores to use during parallelization.
 #' If NULL, the function uses half of the available cores at a maximum. The parallelization
 #' uses `parallel::mclapply` and works only in Unix systems.
+#' @param verbose either logical or an integer (0, 1, or 2) to increase verbosity.
 #' @return x a STlist including spatial interpolations.
 #'
 #' @examples
@@ -53,15 +54,14 @@
 #'
 #' @importFrom magrittr %>%
 #
-gene_interpolation = function(x=NULL, genes='top', top_n=10, samples=NULL, cores=NULL){
+gene_interpolation = function(x=NULL, genes='top', top_n=10, samples=NULL, cores=NULL, verbose=TRUE){
 
   # To prevent NOTES in R CMD check
   . = NULL
 
   # Record time
   zero_t = Sys.time()
-  verbose = 1L
-  if(verbose > 0L){
+  if(verbose){
     cat('Gene interpolation started.\n')
   }
 
@@ -167,7 +167,7 @@ gene_interpolation = function(x=NULL, genes='top', top_n=10, samples=NULL, cores
     notgenes = genes[!subsetgenes_mask]
 
     if(!rlang::is_empty(notgenes)){
-      cat(paste(paste(notgenes, collapse=', '), ": Not present in the transformed counts for sample ", i, ".\n"))
+      message(paste(paste(notgenes, collapse=', '), ": Not present in the transformed counts for sample ", i, ".\n"))
     }
 
     # Create concave hull to "cookie cut" border kriging surface.
@@ -229,7 +229,9 @@ gene_interpolation = function(x=NULL, genes='top', top_n=10, samples=NULL, cores
       grid_sf = sf::st_make_grid(gene_geo_df, n=c(nx, ny), what="centers")
 
       # Give hope to users...
-      system(sprintf('echo "%s"', paste0("\tInterpolating ", j, ' in ', i, "....")))
+      if(verbose > 1L){
+        system(sprintf('echo "%s"', paste0("\tInterpolating ", j, ' in ', i, "....")))
+      }
 
       # Perform kriging
       suppressMessages({
@@ -276,7 +278,7 @@ gene_interpolation = function(x=NULL, genes='top', top_n=10, samples=NULL, cores
 
   # Print time
   end_t = difftime(Sys.time(), zero_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('Gene interpolation completed in ', round(end_t, 2), ' min.\n'))
   }
 

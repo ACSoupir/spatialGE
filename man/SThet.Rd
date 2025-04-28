@@ -10,8 +10,9 @@ SThet(
   samples = NULL,
   method = "moran",
   k = NULL,
-  overwrite = T,
-  cores = NULL
+  overwrite = TRUE,
+  cores = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -34,7 +35,9 @@ Default to FALSE (do not overwrite)}
 
 \item{cores}{integer indicating the number of cores to use during parallelization.
 If NULL, the function uses half of the available cores at a maximum. The parallelization
-uses \code{parallel::mclapply} and works only in Unix systems.}
+uses \code{parallel::mclapply} and works only in Unix systems}
+
+\item{verbose}{logical, whether to print text to console}
 }
 \value{
 an STlist containing spatial statistics

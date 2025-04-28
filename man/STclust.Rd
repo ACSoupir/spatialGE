@@ -13,7 +13,8 @@ STclust(
   ks = "dtc",
   topgenes = 2000,
   deepSplit = FALSE,
-  cores = NULL
+  cores = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -41,6 +42,8 @@ variance is calculated via \code{Seurat::FindVariableFeatures}.}
 control cluster resolution}
 
 \item{cores}{an integer indicating the number of cores to use in parallelization (Unix only)}
+
+\item{verbose}{either logical or an integer (0, 1, or 2) to increase verbosity}
 }
 \value{
 an STlist with cluster assignments

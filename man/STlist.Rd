@@ -4,7 +4,13 @@
 \alias{STlist}
 \title{STlist: Creation of STlist objects for spatial transcriptomics analysis}
 \usage{
-STlist(rnacounts = NULL, spotcoords = NULL, samples = NULL, cores = NULL)
+STlist(
+  rnacounts = NULL,
+  spotcoords = NULL,
+  samples = NULL,
+  cores = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{rnacounts}{the count data which can be provided in one of these formats:
@@ -70,7 +76,9 @@ column. Subsequent columns may contain variables associated with each spatial sa
 
 \item{cores}{integer indicating the number of cores to use during parallelization.
 If NULL, the function uses half of the available cores at a maximum. The parallelization
-uses \code{parallel::mclapply} and works only in Unix systems.}
+uses \code{parallel::mclapply} and works only in Unix systems}
+
+\item{verbose}{logical, whether to print text to console}
 }
 \value{
 an STlist object containing the counts and coordinates, and optionally

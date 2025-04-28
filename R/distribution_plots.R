@@ -22,6 +22,7 @@
 #' density plots are disabled
 #' @param ptsize the size of points in the plots
 #' @param ptalpha the transparency of points (violin/box plot) or curves (density plots)
+#' @return a list containing `ggplot2` objects
 #'
 #' @export
 #'
@@ -75,7 +76,7 @@ spot_plots = function(x=NULL, plot_meta=NULL, samples=NULL,
     df_tmp = tibble::tibble()
     for(i in samples){
       if(!(meta %in% colnames(x@spatial_meta[[i]]))){
-        cat(paste0('Sample ', i, ' does not contain ', meta, '.\n'))
+        message(paste0('Sample ', i, ' does not contain ', meta, '.\n'))
         samples_tmp = grep(paste0('^', i, '$'), samples_tmp, value=T, invert=T)
       } else{
         df_tmp = dplyr::bind_rows(df_tmp,
@@ -144,7 +145,7 @@ gene_plots = function(x=NULL, genes=NULL, samples=NULL, data_type='tr',
     df_tmp = tibble::tibble()
     for(i in samples){
       if(!(gene %in% rownames(expr_tmp[[i]]))){
-        cat(paste0('Sample ', i, ' does not contain ', gene, '.\n'))
+        message(paste0('Sample ', i, ' does not contain ', gene, '.\n'))
         samples_tmp = grep(paste0('^', i, '$'), samples_tmp, value=T, invert=T)
       } else{
         df_tmp = dplyr::bind_rows(df_tmp,
@@ -198,7 +199,7 @@ cluster_gene_plots = function(x=NULL, plot_meta=NULL, genes=NULL, samples=NULL, 
                               plot_type='violin', color_pal='roma', ptsize=0.5, ptalpha=0.5){
 
   if(length(plot_meta) != 1){
-    cat(paste0('Only one metadata variable can be plotted at a time. Plotting ', plot_meta[1], '.'))
+    message(paste0('Only one metadata variable can be plotted at a time. Plotting ', plot_meta[1], '.'))
     plot_meta = plot_meta[1]
   }
 
@@ -218,7 +219,7 @@ cluster_gene_plots = function(x=NULL, plot_meta=NULL, genes=NULL, samples=NULL, 
 
   # Check plot type
   if(!plot_type %in% c('box', 'violin')){
-    cat("Only 'box' or 'violin' are valid choices. Defaulting to 'box'.")
+    message("Only 'box' or 'violin' are valid choices. Defaulting to 'box'.")
     plot_type = 'box'
   }
 
@@ -241,7 +242,7 @@ cluster_gene_plots = function(x=NULL, plot_meta=NULL, genes=NULL, samples=NULL, 
     df_tmp = tibble::tibble()
     for(i in samples){
       if(!(gene %in% rownames(expr_tmp[[i]]))){
-        cat(paste0('Sample ', i, ' does not contain ', gene, '.\n'))
+        message(paste0('Sample ', i, ' does not contain ', gene, '.\n'))
         samples_tmp = grep(paste0('^', i, '$'), samples_tmp, value=T, invert=T)
       } else{
         df_tmp = dplyr::bind_rows(df_tmp,

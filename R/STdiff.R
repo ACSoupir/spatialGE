@@ -46,6 +46,7 @@
 #' `verbose=1`
 #' @param cores Number of cores to use in parallelization. If `NULL`, the number of
 #' cores to use is detected automatically
+#' @param verbose either logical or an integer (0, 1, or 2) to increase verbosity
 #' @return a list with one data frame per sample with results of differential gene
 #' expression analysis
 #'
@@ -147,7 +148,7 @@ STdiff = function(x=NULL, samples=NULL, annot=NULL, w=NULL, k=NULL, deepSplit=NU
   for(i in samples){
     if(!(annot %in% colnames(x@spatial_meta[[i]]))){
       samples_tmp = grep(i, samples_tmp, value=T, invert=T)
-      if(verbose > 0L){
+      if(verbose){
         cat(paste0('Skipping ', i, '. Annotation not available for this sample.\n'))
       }
     }
@@ -185,7 +186,7 @@ STdiff = function(x=NULL, samples=NULL, annot=NULL, w=NULL, k=NULL, deepSplit=NU
   }
 
   # Print metadata to be tested
-  if(verbose > 0L){
+  if(verbose){
     cat(test_print)
   }
   rm(test_print) # Clean environment
@@ -241,7 +242,7 @@ STdiff = function(x=NULL, samples=NULL, annot=NULL, w=NULL, k=NULL, deepSplit=NU
   }
 
   # Print test to conduct
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('\tRunning ', test_print, '...\n'))
   }
 
@@ -411,15 +412,15 @@ STdiff = function(x=NULL, samples=NULL, annot=NULL, w=NULL, k=NULL, deepSplit=NU
   rm(non_sp_de_tmp) # Clean env
 
   end_t = difftime(Sys.time(), start_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('\tCompleted ', test_print, ' (', round(end_t, 2), ' min).\n'))
   }
 
   ######## ######## ######## BEGIN SPATIAL TESTS ######## ######## ########     ##### MADE BIG CHANGES TO NON-SPATIAL... NEED TO CHECK SPATIAL TESTS
   if(test_type == 'mm' & sp_topgenes > 0){
     start_t = Sys.time()
-    if(verbose > 0L){
-      cat(paste0('\tRunning spatial tests...\n'))
+    if(verbose){
+      cat('\tRunning spatial tests...\n')
     }
     sp_models = list()
     for(sample_name in names(result_de)){
@@ -538,7 +539,7 @@ STdiff = function(x=NULL, samples=NULL, annot=NULL, w=NULL, k=NULL, deepSplit=NU
       }
     }
     end_t = difftime(Sys.time(), start_t, units='min')
-    if(verbose > 0L){
+    if(verbose){
       cat(paste0('\n\tCompleted spatial mixed models (', round(end_t, 2), ' min).\n'))
     }
     rm(non_sp_models) # Clean environment
@@ -642,7 +643,7 @@ STdiff = function(x=NULL, samples=NULL, annot=NULL, w=NULL, k=NULL, deepSplit=NU
 
   # Print time
   end_t = difftime(Sys.time(), zero_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('STdiff completed in ', round(end_t, 2), ' min.\n'))
   }
   return(result_de)

@@ -9,7 +9,8 @@ gene_interpolation(
   genes = "top",
   top_n = 10,
   samples = NULL,
-  cores = NULL
+  cores = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ If NULL (Default), all samples are interpolated.}
 \item{cores}{integer indicating the number of cores to use during parallelization.
 If NULL, the function uses half of the available cores at a maximum. The parallelization
 uses \code{parallel::mclapply} and works only in Unix systems.}
+
+\item{verbose}{either logical or an integer (0, 1, or 2) to increase verbosity.}
 }
 \value{
 x a STlist including spatial interpolations.

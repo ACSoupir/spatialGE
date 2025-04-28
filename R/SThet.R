@@ -21,7 +21,8 @@
 #' Default to FALSE (do not overwrite)
 #' @param cores integer indicating the number of cores to use during parallelization.
 #' If NULL, the function uses half of the available cores at a maximum. The parallelization
-#' uses `parallel::mclapply` and works only in Unix systems.
+#' uses `parallel::mclapply` and works only in Unix systems
+#' @param verbose logical, whether to print text to console
 #' @return an STlist containing spatial statistics
 #'
 #' @examples
@@ -53,11 +54,11 @@
 #'
 #' @export
 #
-SThet = function(x=NULL, genes=NULL, samples=NULL, method='moran', k=NULL, overwrite=T, cores=NULL){
+SThet = function(x=NULL, genes=NULL, samples=NULL, method='moran', k=NULL, overwrite=TRUE,
+                 cores=NULL, verbose=TRUE){
   # Record time
   zero_t = Sys.time()
-  verbose = 1L
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('SThet started.\n'))
   }
 
@@ -86,7 +87,7 @@ SThet = function(x=NULL, genes=NULL, samples=NULL, method='moran', k=NULL, overw
     notgenes = genes[!(genes %in% rownames(x@tr_counts[[i]]))]
 
     if(!rlang::is_empty(notgenes)){
-      cat(paste0(paste(notgenes, collapse=', '), ": Not present in the transformed counts for sample ", i), ".\n")
+      message(paste0(paste(notgenes, collapse=', '), ": Not present in the transformed counts for sample ", i), ".\n")
     }
 
     rm(subsetgenes, notgenes) # Clean env
@@ -102,7 +103,7 @@ SThet = function(x=NULL, genes=NULL, samples=NULL, method='moran', k=NULL, overw
 
   # Check whether or not a list of weights have been created
   if(overwrite | is.null(x@misc[['sthet']][['listws']])){
-    if(verbose > 0L){
+    if(verbose){
       cat(paste("\tCalculating spatial weights...\n")) ## Mostly added to make sure calculation is happening only when needed.
     }
     if(!is.null(k)){
@@ -127,7 +128,7 @@ SThet = function(x=NULL, genes=NULL, samples=NULL, method='moran', k=NULL, overw
 
   # Print time
   end_t = difftime(Sys.time(), zero_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('SThet completed in ', round(end_t, 2), ' min.\n'))
   }
 

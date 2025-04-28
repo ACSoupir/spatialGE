@@ -28,10 +28,10 @@ count_cores = function(n){
 
 ##
 #' @title spatial_metadata: Prints the names of the available spot/cell annotations
-#' @description returns a character vector with the names of the annotations in the
-#' `x@spatial_meta` slot.
+#' @description returns the names of the annotations in the `x@spatial_meta` slot.
 #'
 #' @param x an STList object
+#' @return a list of character vectors containing the column names of `x@spatial_meta`
 #'
 #' @export
 #
@@ -53,6 +53,7 @@ spatial_metadata = function(x){
 #' STlist.
 #'
 #' @param x an STList object
+#' @return a character vector with the sample names in the STlist object
 #'
 #' @export
 #
@@ -149,13 +150,13 @@ load_images = function(x=NULL, images=NULL){
   for(i in names(x@counts)){
     fp = grep(paste0(i, '\\.'), images, value=T)
     if(length(fp) == 0){
-      cat(paste0("Image for sample ", i, " was not found.\n"))
+      message(paste0("Image for sample ", i, " was not found.\n"))
       next
     }
 
     # Return warning if more than one file matches the sample name
     if(length(fp) > 1){
-      cat(paste0("Multiple image files matched sample ", i, ". Using the first match (", fp[1], ")."))
+      message(paste0("Multiple image files matched sample ", i, ". Using the first match (", fp[1], ")."))
     }
 
     if(grepl('jpg$', fp[1])){ # CosMx uses jpeg files

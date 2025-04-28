@@ -18,7 +18,8 @@ STgradient(
   robust = TRUE,
   nb_dist_thr = NULL,
   log_dist = FALSE,
-  cores = NULL
+  cores = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -67,6 +68,8 @@ distances. It applies to all distances a constant (1e-200) to avoid log(0)}
 
 \item{cores}{the number of cores used during parallelization. If NULL (default),
 the number of cores is defined automatically}
+
+\item{verbose}{logical, whether to print text to console}
 }
 \value{
 a list of data frames with the results of the test

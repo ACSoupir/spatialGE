@@ -118,7 +118,7 @@ STplot_interpolation = function(x=NULL, genes=NULL, top_n=10, samples=NULL, colo
     for (gene in genes){
 
       if(is.null(x@gene_krige[[gene]][[i]][['krige_out']])){
-        cat(paste0("Kriging for subject ", gene, " in sample ", i, " is not present in STlist\n"))
+        message(paste0("Kriging for subject ", gene, " in sample ", i, " is not present in STlist\n"))
         next
       }
 

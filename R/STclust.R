@@ -27,6 +27,7 @@
 #' @param deepSplit a logical or integer (1-4), to be passed to `cutreeDynamic` and
 #' control cluster resolution
 #' @param cores an integer indicating the number of cores to use in parallelization (Unix only)
+#' @param verbose either logical or an integer (0, 1, or 2) to increase verbosity
 #' @return an STlist with cluster assignments
 #'
 #' @examples
@@ -60,7 +61,7 @@
 #' @importFrom methods as is new
 #' @importFrom stats as.dist complete.cases cutree dist hclust prcomp sd na.omit
 #
-STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', linkage='ward.D2', ks='dtc', topgenes=2000, deepSplit=FALSE, cores=NULL){
+STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', linkage='ward.D2', ks='dtc', topgenes=2000, deepSplit=FALSE, cores=NULL, verbose=TRUE){
 
   # To prevent NOTES in R CMD check
   . = NULL
@@ -68,7 +69,7 @@ STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', link
   # Record time
   zero_t = Sys.time()
   verbose = 1L
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('STclust started...\n'))
   }
 
@@ -177,7 +178,9 @@ STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', link
       stop('Currently, only spatially-informed hierarchical clustering is supported.')
     }
 
-    system(sprintf('echo "%s"', paste0("\tClustering completed for ", i, "...")))
+    if(verbose > 1L){
+      system(sprintf('echo "%s"', paste0("\tClustering completed for ", i, "...")))
+    }
 
     return(hierclusters_ls)
   }, mc.cores=cores)
@@ -186,7 +189,9 @@ STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', link
   rm(trcounts_df) # Clean env
 
   # Add results to STlist
-  cat('Updating STlist with results...\n')
+  if(verbose){
+    cat('Updating STlist with results...\n')
+  }
   lapply(samples, function(i){
     for(w in 1:length(ws)){
       if(any(colnames(x@spatial_meta[[i]])[-c(1:5)] %in% colnames(res_ls[[i]][[w]]))){
@@ -199,7 +204,7 @@ STclust = function(x=NULL, samples=NULL, ws=0.025, dist_metric='euclidean', link
 
   # Print time
   end_t = difftime(Sys.time(), zero_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('STclust completed in ', round(end_t, 2), ' min.\n'))
   }
 

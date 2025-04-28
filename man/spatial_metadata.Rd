@@ -9,7 +9,9 @@ spatial_metadata(x)
 \arguments{
 \item{x}{an STList object}
 }
+\value{
+a list of character vectors containing the column names of \code{x@spatial_meta}
+}
 \description{
-returns a character vector with the names of the annotations in the
-\code{x@spatial_meta} slot.
+returns the names of the annotations in the \code{x@spatial_meta} slot.
 }

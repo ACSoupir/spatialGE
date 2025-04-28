@@ -33,6 +33,7 @@
 #' @param seed the seed number for the selection of random samples. Default is 12345
 #' @param cores the number of cores used during parallelization. If NULL (default),
 #' the number of cores is defined automatically
+#' @param verbose either logical or an integer (0, 1, or 2) to increase verbosity
 #' @return a list of data frames with the results of the test
 #'
 #' @export
@@ -43,7 +44,7 @@
 #
 STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps=1000,
                     annot=NULL, domain=NULL, num_sds=1, min_units=20, min_genes=5,
-                    pval_adj_method='BH', seed=12345, cores=NULL){
+                    pval_adj_method='BH', seed=12345, cores=NULL, verbose=TRUE){
 
   # To prevent NOTES in R CMD check
   . = NULL
@@ -51,7 +52,9 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
   # Record time
   zero_t = Sys.time()
 
-  cat("Running STenrich...\n")
+  if(verbose){
+    cat("Running STenrich...\n")
+  }
 
   reps = as.integer(reps)
   num_sds = as.double(num_sds)
@@ -78,7 +81,9 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
   tissue_spots = NULL
   sample_rm = c() # Remove samples if annotation or domain(s) are not present
   if(!is.null(annot) & !is.null(domain)){
-    cat(paste0('\tUsing domain-restricted mode.\n'))
+    if(verbose){
+      cat('\tUsing domain-restricted mode.\n')
+    }
     tissue_spots = list()
     for(i in samples){
       if(any(colnames(x@spatial_meta[[i]]) == annot)){
@@ -87,16 +92,16 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
           if(length(tissue_spots_tmp) >= min_units){
             tissue_spots[[i]] = tissue_spots_tmp
           } else{
-            cat(paste0('\tSample ', i, ' has less than two spots/cells assigned to domain. Skipping.\n'))
+            message(paste0('\tSample ', i, ' has less than two spots/cells assigned to domain. Skipping.\n'))
             sample_rm = append(sample_rm, i)
           }
           rm(tissue_spots_tmp) # Clean env
         } else{
-          cat(paste0('\tSample ', i, ' does not contain the specified domains. Skipping.\n'))
+          message(paste0('\tSample ', i, ' does not contain the specified domains. Skipping.\n'))
           sample_rm = append(sample_rm, i)
         }
       } else{
-        cat(paste0('\tSample ', i, ' does not contain the specified annotation. Skipping.\n'))
+        message(paste0('\tSample ', i, ' does not contain the specified annotation. Skipping.\n'))
         sample_rm = append(sample_rm, i)
       }
     }
@@ -189,7 +194,9 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
 
   # Check requested score type (mean or GSVA) and calculate average expresion or scores
   if(score_type == 'avg'){
-    cat("\tCalculating average gene set expression...\n")
+    if(verbose){
+      cat("\tCalculating average gene set expression...\n")
+    }
     # Define if user input number of cores, otherwise determine
     if(!user_cores){
       cores = count_cores(nrow(combo))
@@ -198,7 +205,9 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
     result_df = calculate_gs_mean_exp(delayed_x, combo, pw_genes, min_genes, cores)
 
   } else if(score_type == 'gsva'){
-    cat("\tCalculating GSVA score...\n")
+    if(verbose){
+      cat("\tCalculating GSVA score...\n")
+    }
     # Define if user input number of cores, otherwise determine
     if(!user_cores){
       cores = count_cores(length(gene_sets))
@@ -224,7 +233,9 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
 
     # Perform tests
     if(!all(is.na(expr_vals))){ # Are all values for a gene set NA? (can happen if not enough genes in gene set, for example)
-      system(sprintf('echo "%s"', paste0("\tTesting sample ", sample_tmp, ", ", gs_tmp, "...")))
+      if(verbose >= 2L){
+        system(sprintf('echo "%s"', paste0("\tTesting sample ", sample_tmp, ", ", gs_tmp, "...")))
+      }
       # Calculate expression or score threshold
       exp_thresh = mean(expr_vals, na.rm=T) + (num_sds*sd(expr_vals, na.rm=T))
       # Extract spots with average expression above sd threshold
@@ -284,9 +295,8 @@ STenrich = function(x=NULL, samples=NULL, gene_sets=NULL, score_type='avg', reps
   names(pval_res) = sample_names_tmp
 
   # Print time
-  verbose = 1L
   end_t = difftime(Sys.time(), zero_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('STenrich completed in ', round(end_t, 2), ' min.\n'))
   }
 

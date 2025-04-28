@@ -1,4 +1,5 @@
 .DS_Store
+.Rproj
 .Rproj.user
 .Rhistory
 .RData
@@ -10,5 +11,7 @@ R/.DS_Store
 R/STdiff_2.R
 vignettes/.Rhistory
 .Rbuildignore
+.gitignore
 src/*.o
 src/*.so
+src/*.dll

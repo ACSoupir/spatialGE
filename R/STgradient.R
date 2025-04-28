@@ -41,6 +41,7 @@
 #' distances. It applies to all distances a constant (1e-200) to avoid log(0)
 #' @param cores the number of cores used during parallelization. If NULL (default),
 #' the number of cores is defined automatically
+#' @param verbose logical, whether to print text to console
 #' @return a list of data frames with the results of the test
 #'
 #' @export
@@ -50,7 +51,8 @@
 #
 #
 STgradient = function(x=NULL, samples=NULL, topgenes=2000, annot=NULL, ref=NULL, exclude=NULL,
-                      out_rm=FALSE, limit=NULL, distsumm='min', min_nb=3, robust=TRUE, nb_dist_thr=NULL, log_dist=FALSE, cores=NULL){
+                      out_rm=FALSE, limit=NULL, distsumm='min', min_nb=3, robust=TRUE,
+                      nb_dist_thr=NULL, log_dist=FALSE, cores=NULL, verbose=TRUE){
 
   # To prevent NOTES in R CMD check
   . = NULL
@@ -81,7 +83,7 @@ STgradient = function(x=NULL, samples=NULL, topgenes=2000, annot=NULL, ref=NULL,
   for(i in samplenames){
     if( !(annot %in% colnames(x@spatial_meta[[i]])) ){
       sample_rm = append(sample_rm, i)
-      cat(paste0('The annotation specified in `annot` is not present in ', i, '\n'))
+      message(paste0('The annotation specified in `annot` is not present in ', i, '\n'))
     }
   }
   samplenames = samplenames[ !(samplenames %in% sample_rm) ]
@@ -418,9 +420,8 @@ STgradient = function(x=NULL, samples=NULL, topgenes=2000, annot=NULL, ref=NULL,
   }
 
   # Print time
-  verbose = 1L
   end_t = difftime(Sys.time(), zero_t, units='min')
-  if(verbose > 0L){
+  if(verbose){
     cat(paste0('STgradient completed in ', round(end_t, 2), ' min.\n'))
   }
 

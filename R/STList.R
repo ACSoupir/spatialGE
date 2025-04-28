@@ -93,7 +93,8 @@
 #' }
 #' @param cores integer indicating the number of cores to use during parallelization.
 #' If NULL, the function uses half of the available cores at a maximum. The parallelization
-#' uses `parallel::mclapply` and works only in Unix systems.
+#' uses `parallel::mclapply` and works only in Unix systems
+#' @param verbose logical, whether to print text to console
 #' @return an STlist object containing the counts and coordinates, and optionally
 #' the sample metadata, which can be used for downstream analysis with `spatialGE`
 #'
@@ -127,7 +128,7 @@
 #' @import Matrix
 #' @importFrom magrittr %>%
 #
-STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
+STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL, verbose=TRUE){
   # Check input type.
   input_check = detect_input(rnacounts=rnacounts, spotcoords=spotcoords, samples=samples)
   input_rnacounts = detect_input_rnacounts(rnacounts)
@@ -194,7 +195,9 @@ STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
   # CASE: NAMED LIST OF DATAFRAMES WITH COUNTS AND NAMED LIST OF DATA FRAMES WITH COORDINATES.
   # METADATA INFO OPTIONAL.
   if(input_rnacounts == 'list_dfs' && input_spotcoords == 'list_dfs'){
-    cat(paste("Found list of dataframes.\n"))
+    if(verbose){
+      cat("Found list of dataframes.\n")
+    }
     pre_lists = read_list_dfs(rnacounts, spotcoords)
   }
 
@@ -202,7 +205,9 @@ STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
   # CASE: SEURAT OBJECT
   if(input_rnacounts == 'seurat'){
     requireNamespace('SeuratObject')
-    cat(paste("Found Seurat object.\n"))
+    if(verbose){
+      cat("Found Seurat object.\n")
+    }
     pre_lists = read_seurat(rnacounts)
     img_obj = pre_lists[['images']]
     platform = 'visium' # FUTURE DEVELOPMENT: CANT ASSUME IT'S VISIUM... MAYBE SHOULD USE INFO FROM SEURAT OBJECT TO IDENTIFY TECH
@@ -220,22 +225,30 @@ STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
 
     # Check if input is Visium, Xenium, CosMx, or count+coord matrices
     if(input_rnacounts %in% visium){
-      cat(paste("Found Visium data\n"))
-      pre_lists = read_visium_outs(filepaths, input_rnacounts, cores=cores)
+      if(verbose){
+        cat("Found Visium data\n")
+      }
+      pre_lists = read_visium_outs(filepaths, input_rnacounts, cores=cores, verbose=verbose)
       img_obj = pre_lists[['images']]
       image_scale = pre_lists[['json_scale']]
       platform = 'visium'
     } else if(input_rnacounts %in% xenium){
-      cat(paste("Found Xenium data\n"))
-      pre_lists = read_xenium_outs(filepaths, input_rnacounts, cores=cores)
+      if(verbose){
+        cat("Found Xenium data\n")
+      }
+      pre_lists = read_xenium_outs(filepaths, input_rnacounts, cores=cores, verbose=verbose)
       platform = 'xenium'
     } else if(input_check$rna[1] == 'cosmx'){
-      cat(paste("Found CosMx-SMI data\n"))
-      pre_lists = read_cosmx_input(filepaths, input_check, cores=cores)
+      if(verbose){
+        cat("Found CosMx-SMI data\n")
+      }
+      pre_lists = read_cosmx_input(filepaths, input_check, cores=cores, verbose=verbose)
       img_obj = pre_lists[['images']]
       platform = 'cosmx'
     } else{
-      cat(paste("Found matrix data\n"))
+      if(verbose){
+        cat("Found matrix data\n")
+      }
       pre_lists = read_matrices_fps(filepaths, input_check, cores=cores)
     }
   }
@@ -250,7 +263,9 @@ STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
   }
 
   # Process count and coordinate lists before placing within STlist
-  cat(paste("Matching gene expression and coordinate data...\n"))
+  if(verbose){
+    cat(paste("Matching gene expression and coordinate data...\n"))
+  }
   procLists = process_lists(counts_df_list=pre_lists[['counts']], coords_df_list=pre_lists[['coords']])
 
   # Process metadata if provided or make an empty tibble
@@ -267,13 +282,17 @@ STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
 
   if(!is.null(input_check$rna[1])){
     if(!(input_check$rna[1] %in% c('visium_out_h5', 'visium_out_mex'))){
-      cat(paste("Converting counts to sparse matrices\n"))
+      if(verbose){
+        cat(paste("Converting counts to sparse matrices\n"))
+      }
       procLists[['counts']] = parallel::mclapply(procLists[['counts']], function(x){
         makeSparse(x)
       })
     }
   } else if(!(input_check$samples[1] %in% c('samplesfile_visium_h5', 'samplesfile_visium_mex'))){
-    cat(paste("Converting counts to sparse matrices\n"))
+    if(verbose){
+      cat(paste("Converting counts to sparse matrices\n"))
+    }
     procLists[['counts']] = parallel::mclapply(procLists[['counts']], function(x){
       makeSparse(x)
     })
@@ -309,7 +328,11 @@ STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL){
                              image_scaling=image_scale,
                              sthet=list())
   )
-  cat("Completed STlist!\n")
+
+  if(verbose){
+    cat("Completed STlist!\n")
+  }
+
   return(STlist_obj)
 }
 
@@ -504,7 +527,7 @@ read_matrices_fps = function(filepaths, input_check, cores=NULL){
 # @param input_rnacounts The result of detect_input_rnacounts
 # @return a list with two lists within (one with counts, one with coordinates)
 #
-read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
+read_visium_outs = function(filepaths, input_rnacounts, cores=NULL, verbose=TRUE){
 
   # To prevent NOTES in R CMD check
   . = NULL
@@ -548,9 +571,9 @@ read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
       fp_list[[i]]$barcodes = vbarcodes
       fp_list[[i]]$counts = vcounts
 
-      if(rlang::is_empty(vfeatures)) cat(paste("Features for", filepaths$sampleids[i], "not able to be found..."))
-      if(rlang::is_empty(vbarcodes)) cat(paste("Barcodes for", filepaths$sampleids[i], "not able to be found..."))
-      if(rlang::is_empty(vcounts)) cat(paste("Counts for", filepaths$sampleids[i], "not able to be found..."))
+      if(rlang::is_empty(vfeatures)) message(paste("Features for", filepaths$sampleids[i], "not able to be found..."))
+      if(rlang::is_empty(vbarcodes)) message(paste("Barcodes for", filepaths$sampleids[i], "not able to be found..."))
+      if(rlang::is_empty(vcounts)) message(paste("Counts for", filepaths$sampleids[i], "not able to be found..."))
 
       if(rlang::is_empty(vfeatures) | rlang::is_empty(vbarcodes) | rlang::is_empty(vcounts) | rlang::is_empty(vcoords)){
         fp_list[[i]] = list()
@@ -573,7 +596,7 @@ read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
 
       fp_list[[i]]$counts = h5counts
 
-      if(rlang::is_empty(vcoords)) cat(paste("Coordinates for", filepaths$sampleids[i], "not able to be found...\n"))
+      if(rlang::is_empty(vcoords)) message(paste("Coordinates for", filepaths$sampleids[i], "not able to be found...\n"))
       if(rlang::is_empty(h5counts) | rlang::is_empty(vcoords)){
         fp_list[[i]] = list()
         missingSamples  = missingSamples + 1
@@ -589,7 +612,9 @@ read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
     rm(temp_fps, vcoords, vimage) # Clean environment
   }
 
-  cat(paste("\tFound", length(filepaths$sampleids)-missingSamples, "Visium samples\n"))
+  if(verbose){
+    cat(paste("\tFound", length(filepaths$sampleids)-missingSamples, "Visium samples\n"))
+  }
 
   # Define number of available cores to use.
   if(.Platform$OS.type == 'windows'){
@@ -609,7 +634,9 @@ read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
     if(length(fp_list[[i]]$counts) == 0){
       return(list())
     }
-    system(sprintf('echo "%s"', paste0("\t\tProcessing Sample ", i, "....")))
+    if(verbose){
+      system(sprintf('echo "%s"', paste0("\t\tProcessing Sample ", i, "....")))
+    }
 
     # Process Visium outputs
     if(input_rnacounts %in% c('visium_filtered_mex', 'visium_raw_mex')){
@@ -621,11 +648,16 @@ read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
       visium_processed = import_visium_h5(counts_fp=fp_list[[i]][['counts']],
                                           coords_fp=fp_list[[i]][['coords']])
     }
-    system(sprintf('echo "%s"', paste0("\t\tFinished data read Sample ", i)))
+
+    if(verbose){
+      system(sprintf('echo "%s"', paste0("\t\tFinished data read Sample ", i)))
+    }
 
     return(visium_processed)
   }, mc.cores=cores, mc.preschedule=F)
-  cat(paste("\tData read completed\n"))
+  if(verbose){
+    cat(paste("\tData read completed\n"))
+  }
 
   # Organize the paralellized output into corresponding lists.
   return_lists = list()
@@ -677,7 +709,7 @@ read_visium_outs = function(filepaths, input_rnacounts, cores=NULL){
 # @param input_rnacounts The result of detect_input_rnacounts
 # @return a list with two lists within (one with counts, one with coordinates)
 #
-read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
+read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL, verbose=TRUE){
   # Find necessary files from Xenium input
   missingSamples = 0
   fp_list = list()
@@ -705,9 +737,9 @@ read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
       fp_list[[i]]$barcodes = vbarcodes
       fp_list[[i]]$counts = vcounts
 
-      if(rlang::is_empty(vfeatures)) cat(paste("Features for", filepaths$sampleids[i], "not able to be found..."))
-      if(rlang::is_empty(vbarcodes)) cat(paste("Barcodes for", filepaths$sampleids[i], "not able to be found..."))
-      if(rlang::is_empty(vcounts)) cat(paste("Counts for", filepaths$sampleids[i], "not able to be found..."))
+      if(rlang::is_empty(vfeatures)) message(paste("Features for", filepaths$sampleids[i], "not able to be found..."))
+      if(rlang::is_empty(vbarcodes)) message(paste("Barcodes for", filepaths$sampleids[i], "not able to be found..."))
+      if(rlang::is_empty(vcounts)) message(paste("Counts for", filepaths$sampleids[i], "not able to be found..."))
 
       if(rlang::is_empty(vfeatures) | rlang::is_empty(vbarcodes) | rlang::is_empty(vcounts) | rlang::is_empty(vcoords)){
         fp_list[[i]] = list()
@@ -726,7 +758,7 @@ read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
 
       fp_list[[i]]$counts = h5counts
 
-      if(rlang::is_empty(vcoords)) cat(paste("Coordinates for", filepaths$sampleids[i], "not able to be found...\n"))
+      if(rlang::is_empty(vcoords)) message(paste("Coordinates for", filepaths$sampleids[i], "not able to be found...\n"))
       if(rlang::is_empty(h5counts) | rlang::is_empty(vcoords)){
         fp_list[[i]] = list()
         missingSamples  = missingSamples + 1
@@ -740,7 +772,9 @@ read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
     rm(temp_fps, vcoords) # Clean environment
   }
 
-  cat(paste("\tFound", length(filepaths$sampleids)-missingSamples, "Xenium samples\n"))
+  if(verbose){
+    cat(paste("\tFound", length(filepaths$sampleids)-missingSamples, "Xenium samples\n"))
+  }
 
   # Define number of available cores to use.
   if(.Platform$OS.type == 'windows'){
@@ -760,7 +794,10 @@ read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
     if(length(fp_list[[i]]$counts) == 0){
       return(list())
     }
-    system(sprintf('echo "%s"', paste0("\t\tProcessing Sample ", i, "....")))
+
+    if(verbose){
+      system(sprintf('echo "%s"', paste0("\t\tProcessing Sample ", i, "....")))
+    }
 
     # Process Visium outputs
     if(input_rnacounts[1] == 'xenium_mex'){
@@ -772,11 +809,16 @@ read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
       xenium_processed = import_xenium_h5(counts_fp=fp_list[[i]][['counts']],
                                           coords_fp=fp_list[[i]][['coords']])
     }
-    system(sprintf('echo "%s"', paste0("\t\tFinished data read Sample ", i)))
+
+    if(verbose){
+      system(sprintf('echo "%s"', paste0("\t\tFinished data read Sample ", i)))
+    }
 
     return(xenium_processed)
   }, mc.cores=cores, mc.preschedule=F)
-  cat(paste("\tData read completed\n"))
+  if(verbose){
+    cat(paste("\tData read completed\n"))
+  }
 
   # Organize the paralellized output into corresponding lists.
   return_lists = list()
@@ -798,7 +840,7 @@ read_xenium_outs = function(filepaths, input_rnacounts, cores=NULL){
 # @param input_check The result of detect_input
 # @return return_lists a list with two lists within (one with counts, one with coordinates)
 #
-read_cosmx_input = function(filepaths, input_check, cores=NULL){
+read_cosmx_input = function(filepaths, input_check, cores=NULL, verbose=TRUE){
   # Verify that the files contain the necessary columns: fov, cell_ID, CenterX_local_px, and CenterY_local_px
   missingSamples = 0
   fp_list = list()
@@ -824,24 +866,35 @@ read_cosmx_input = function(filepaths, input_check, cores=NULL){
     }
   }
 
-  cat(paste("Found", length(filepaths$sampleids)-missingSamples, "CosMx-SMI samples\n"))
+  if(verbose){
+    cat(paste("Found", length(filepaths$sampleids)-missingSamples, "CosMx-SMI samples\n"))
+  }
 
   # Use parallelization to read count data if possible.
   output_temp = parallel::mclapply(seq_along(1:length(fp_list)), function(i){
     if(length(fp_list[[i]][['counts']]) == 0){
       return(list())
     }
-    system(sprintf('echo "%s"', paste0("\tProcessing sample ", i, "....")))
+
+    if(verbose){
+      system(sprintf('echo "%s"', paste0("\tProcessing sample ", i, "....")))
+    }
 
     # Process CosMx outputs.
     cosmx_processed = import_smi(counts_fp=fp_list[[i]][['counts']],
                                  coords_fp=fp_list[[i]][['coords']],
                                  slidename=fp_list[[i]][['runname']])
 
-    system(sprintf('echo "%s"', paste0("\tFinished data read sample ", i)))
+    if(verbose){
+      system(sprintf('echo "%s"', paste0("\tFinished data read sample ", i)))
+    }
+
     return(cosmx_processed)
   }, mc.cores=cores, mc.preschedule=F)
-  cat("\tData read completed\n")
+
+  if(verbose){
+    cat("\tData read completed\n")
+  }
 
   # Organize the paralellized output into corresponding lists.
   return_lists = list()

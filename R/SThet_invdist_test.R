@@ -50,7 +50,7 @@ SThet_invdist_test = function(x=NULL, genes=NULL, samples=NULL, method='moran', 
     notgenes = genes[!(genes %in% rownames(x@tr_counts[[i]]))]
 
     if(!rlang::is_empty(notgenes)){
-      cat(paste0(paste(notgenes, collapse=', '), ": Not present in the transformed counts for sample ", i), ".\n")
+      message(paste0(paste(notgenes, collapse=', '), ": Not present in the transformed counts for sample ", i), ".\n")
     }
 
     rm(subsetgenes, notgenes) # Clean env
@@ -66,7 +66,7 @@ SThet_invdist_test = function(x=NULL, genes=NULL, samples=NULL, method='moran', 
 
   # Check whether or not a list of weights have been created
   if(overwrite | is.null(x@misc[['sthet']][['listws']])){
-    cat("Calculating spatial weights...\n") ## Mostly added to make sure calculation is happening only when needed.
+    #cat("Calculating spatial weights...\n") ## Mostly added to make sure calculation is happening only when needed.
     if(!is.null(k)){
       k = as.integer(k)
       if(!is.na(k) & k > 0){

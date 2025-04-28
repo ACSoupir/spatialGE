@@ -41,6 +41,9 @@ density plots are disabled}
 
 \item{ptalpha}{the transparency of points (violin/box plot) or curves (density plots)}
 }
+\value{
+a list containing \code{ggplot2} objects
+}
 \description{
 Generates violin plots, boxplots, or density plots of variables in the
 spatial meta data or of gene expression
