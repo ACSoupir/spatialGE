@@ -27,7 +27,7 @@ this publication: https://doi.org/10.1093/bioinformatics/btac145. For details on
 developed methods `STenrich`, `STgradient`, and `STdiff` please refer to the spatialGE documentation.
 
 <p align="center">
-<img src="vignetes/img/spatialGE_workflow_v3.png" height="686" width="600" >
+<img src="vignettes/img/spatialGE_workflow_v3.png" height="686" width="600" >
 </p>
 
 ## Installation
