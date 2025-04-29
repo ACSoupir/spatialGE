@@ -47,7 +47,7 @@ library('spatialGE')
 
 ## Spatially-resolved expression of triple negative breast cancer tumor biopsies
 
-To show the utility of some of the functions in `spatialGE`, we use the spatial transcriptomics data set generated with the platform Visium by @bassiouni_2023. This data set includes triple negative breast cancer biopsies from 22 patients, with two tissue slices per patient. The Visium platform allows gene expression quantitation in approximately 5000 capture areas (i.e., "spots") separated each other by 100μM. The spots are 55μM in diameter, which corresponds to 1-10 cells approximately [according to the manufacturer](https://kb.10xgenomics.com/hc/en-us/articles/360035487952-How-many-cells-are-captured-in-a-single-spot).
+To show the utility of some of the functions in `spatialGE`, we use the spatial transcriptomics data set generated with the platform Visium by @bassiouni_2023. This data set includes triple negative breast cancer biopsies from 22 patients, with two tissue slices per patient. The Visium platform allows gene expression quantitation in approximately 5000 capture areas (i.e., "spots") separated each other by 100μM. The spots are 55μM in diameter, which corresponds to 1-10 cells approximately, depending on cell size.
 
 Data for all the tissue slices are available at the Gene Expression Omnibus (GEO). For the purpose of this tutorial, we will use eight samples from four patients. 
 
