@@ -26,7 +26,7 @@
 #' @return an STlist containing spatial statistics
 #'
 #' @examples
-##'
+#'\dontrun{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -51,6 +51,7 @@
 #' melanoma <- transform_data(melanoma, method='log')
 #' melanoma <- SThet(melanoma, genes=c('MLANA', 'TP53'), method='moran')
 #' get_gene_meta(melanoma, sthet_only=TRUE)
+#'}
 #'
 #' @export
 #

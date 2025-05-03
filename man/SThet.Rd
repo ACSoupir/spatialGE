@@ -54,7 +54,7 @@ be accessed with the \code{get_gene_meta} function. For visual comparative analy
 the function \code{compare_SThet} can be used afterwards.
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -79,5 +79,6 @@ melanoma <- STlist(rnacounts=count_files[c(1,2)],
 melanoma <- transform_data(melanoma, method='log')
 melanoma <- SThet(melanoma, genes=c('MLANA', 'TP53'), method='moran')
 get_gene_meta(melanoma, sthet_only=TRUE)
+}
 
 }

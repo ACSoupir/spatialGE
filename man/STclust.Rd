@@ -62,7 +62,7 @@ The \code{STclust} method allows for identification of tissue niches/domains tha
 spatially cohesive.
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -85,5 +85,6 @@ melanoma <- STlist(rnacounts=count_files[c(1,3)], spotcoords=coord_files[c(1,3)]
 melanoma <- transform_data(melanoma, method='log')
 melanoma <- STclust(melanoma, ws=c(0, 0.025))
 STplot(melanoma, ws=0.025, samples='ST_mel1_rep2', ptsize=1)
+}
 
 }

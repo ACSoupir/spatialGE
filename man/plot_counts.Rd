@@ -52,7 +52,7 @@ data transformations and to assess zero-inflation. To plot counts or genes per
 spot/cell, the function \code{distribution_plots} should be used instead.
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -76,5 +76,6 @@ melanoma <- STlist(rnacounts=count_files[c(1,2)],
                    samples=clin_file) # Only first two samples
 cp <- plot_counts(melanoma, data_type='raw', plot_type=c('violin', 'box'))
 ggpubr::ggarrange(plotlist=cp)
+}
 
 }

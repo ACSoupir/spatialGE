@@ -25,7 +25,7 @@
 #' @return a list of ggplot objects
 #'
 #' @examples
-##'
+#'\dontrun{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -49,6 +49,7 @@
 #'                    samples=clin_file) # Only first two samples
 #' cp <- plot_counts(melanoma, data_type='raw', plot_type=c('violin', 'box'))
 #' ggpubr::ggarrange(plotlist=cp)
+#'}
 #'
 #' @export
 #'

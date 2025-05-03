@@ -49,7 +49,7 @@ Note that the method \code{sct} returns a matrix with less genes as filtering is
 done for low expression genes.
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -72,5 +72,6 @@ melanoma <- STlist(rnacounts=count_files[c(1,2)],
                    spotcoords=coord_files[c(1,2)],
                    samples=clin_file) # Only first two samples
 melanoma <- transform_data(melanoma, method='log')
+}
 
 }

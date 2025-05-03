@@ -31,7 +31,7 @@
 #' @return an STlist with cluster assignments
 #'
 #' @examples
-##'
+#'\dontrun{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -54,6 +54,7 @@
 #' melanoma <- transform_data(melanoma, method='log')
 #' melanoma <- STclust(melanoma, ws=c(0, 0.025))
 #' STplot(melanoma, ws=0.025, samples='ST_mel1_rep2', ptsize=1)
+#'}
 #'
 #' @export
 #'
