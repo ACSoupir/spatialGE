@@ -38,7 +38,7 @@ exploration of differences among samples. Each column in the heatmap represents 
 the \code{hm_display_genes} argument. This function follows after usage of \code{pseudobulk_samples}.
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -62,5 +62,6 @@ melanoma <- STlist(rnacounts=count_files,
                    samples=clin_file, cores=2)
 melanoma <- pseudobulk_samples(melanoma)
 hm <- pseudobulk_heatmap(melanoma, plot_meta='BRAF_status', hm_display_genes=30)
+}
 
 }

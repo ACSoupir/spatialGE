@@ -64,7 +64,7 @@ cluster memberships, or any spot/cell level metadata included in \code{x@spatial
 The function also can average expression of gene sets.
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -88,5 +88,6 @@ melanoma <- STlist(rnacounts=count_files[c(1,2)],
                    samples=clin_file) # Only first two samples
 melanoma <- transform_data(melanoma)
 STplot(melanoma, gene='MLANA', samples='ST_mel1_rep2', ptsize=1)
+}
 
 }

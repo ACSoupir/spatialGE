@@ -283,7 +283,7 @@ pseudobulk_dim_plot = function(x=NULL, color_pal='muted', plot_meta=NULL, dim='p
 #' @return a ggplot object
 #'
 #' @examples
-##'
+#' \dontrun{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -307,6 +307,7 @@ pseudobulk_dim_plot = function(x=NULL, color_pal='muted', plot_meta=NULL, dim='p
 #'                    samples=clin_file, cores=2)
 #' melanoma <- pseudobulk_samples(melanoma)
 #' hm <- pseudobulk_heatmap(melanoma, plot_meta='BRAF_status', hm_display_genes=30)
+#' }
 #'
 #' @export pseudobulk_heatmap
 #'

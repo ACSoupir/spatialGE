@@ -31,7 +31,7 @@
 #' @return a list of plots
 #'
 #' @examples
-##'
+#' \dontrun{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -55,6 +55,7 @@
 #'                    samples=clin_file) # Only first two samples
 #' melanoma <- transform_data(melanoma)
 #' STplot(melanoma, gene='MLANA', samples='ST_mel1_rep2', ptsize=1)
+#' }
 #'
 #' @export
 #'

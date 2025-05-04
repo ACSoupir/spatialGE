@@ -23,7 +23,7 @@
 #' @return x a STlist including spatial interpolations.
 #'
 #' @examples
-##'
+#' \dontrun{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -49,6 +49,7 @@
 #' melanoma <- gene_interpolation(melanoma, genes=c('MLANA', 'COL1A1'), samples='ST_mel1_rep2')
 #' kp = STplot_interpolation(melanoma, genes=c('MLANA', 'COL1A1'))
 #' ggpubr::ggarrange(plotlist=kp)
+#' }
 #'
 #' @export
 #'
