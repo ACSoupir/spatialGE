@@ -27,7 +27,7 @@ Principal Component Analysis (PCA) to explore non-spatial sample-to-sample
 variation
 }
 \examples{
-
+\dontrun{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
@@ -51,5 +51,6 @@ melanoma <- STlist(rnacounts=count_files,
                    samples=clin_file, cores=2)
 melanoma <- pseudobulk_samples(melanoma)
 pseudobulk_dim_plot(melanoma)
+}
 
 }
