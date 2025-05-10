@@ -285,7 +285,7 @@ create_listw_from_dist = function(x=NULL, cores=NULL){
 #' @return a data frame with gene-level data
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()

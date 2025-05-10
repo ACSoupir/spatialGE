@@ -14,7 +14,7 @@
 #' @return an STlist with appended pseudobulk counts and PCA coordinates
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -170,7 +170,7 @@ pseudobulk_samples = function(x=NULL, max_var_genes=5000, calc_umap=FALSE){
 #' @return a ggplot object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
@@ -285,7 +285,7 @@ pseudobulk_dim_plot = function(x=NULL, color_pal='muted', plot_meta=NULL, dim='p
 #' @return a ggplot object
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
