@@ -71,7 +71,7 @@ library('spatialGE')
 melanoma <- STlist(rnacounts=count_files[c(1,2)],
                    spotcoords=coord_files[c(1,2)],
                    samples=clin_file) # Only first two samples
-melanoma <- transform_data(melanoma, method='log')
+melanoma <- transform_data(melanoma, method='log', cores=2)
 }
 
 }
