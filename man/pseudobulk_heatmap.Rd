@@ -38,7 +38,7 @@ exploration of differences among samples. Each column in the heatmap represents 
 the \code{hm_display_genes} argument. This function follows after usage of \code{pseudobulk_samples}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()

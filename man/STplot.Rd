@@ -64,7 +64,7 @@ cluster memberships, or any spot/cell level metadata included in \code{x@spatial
 The function also can average expression of gene sets.
 }
 \examples{
-\dontrun{
+\donttest{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()

@@ -49,7 +49,7 @@ Note that the method \code{sct} returns a matrix with less genes as filtering is
 done for low expression genes.
 }
 \examples{
-\dontrun{
+\donttest{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()

@@ -46,7 +46,7 @@ differences among samples. The points in the plot represent "pseudobulk" samples
 This function follows after usage of \code{pseudobulk_samples}.
 }
 \examples{
-\dontrun{
+\donttest{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()

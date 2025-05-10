@@ -24,7 +24,7 @@ have been calculated. The output is a data frame with data from all samples in t
 STlist
 }
 \examples{
-\dontrun{
+\donttest{
 # Using included melanoma example (Thrane et al.)
 # Download example data set from spatialGE_Data
 thrane_tmp = tempdir()
