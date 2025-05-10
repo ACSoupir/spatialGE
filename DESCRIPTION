@@ -18,8 +18,8 @@ Authors@R: c(
            email = "Brooke.Fridley@Moffitt.org",
            comment = c(ORCID = "0000-0001-7739-7956")),
     person("Satija Lab", 
-    		role = c("cph"))
-    		comment="Copyright holder of code fragments from Seurat function FindVariableFeatures"
+    		role = "cph",
+    		comment="Copyright holder of code fragments from Seurat function FindVariableFeatures")
            )
 Description: Visualization and analysis of spatially resolved transcriptomics data. The 'spatialGE'
 	R package provides methods for visualizing and analyzing spatially resolved transcriptomics data, 

@@ -49,7 +49,7 @@
 #'                    samples=clin_file) # Only first two samples
 #' cp <- plot_counts(melanoma, data_type='raw', plot_type=c('violin', 'box'))
 #' ggpubr::ggarrange(plotlist=cp)
-#'}
+#' }
 #'
 #' @export
 #'

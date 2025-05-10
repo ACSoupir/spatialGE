@@ -99,7 +99,7 @@
 #' the sample metadata, which can be used for downstream analysis with `spatialGE`
 #'
 #' @examples
-##'
+#'
 #' # Using included melanoma example (Thrane et al.)
 #' # Download example data set from spatialGE_Data
 #' thrane_tmp = tempdir()
