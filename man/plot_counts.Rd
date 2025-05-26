@@ -59,23 +59,28 @@ thrane_tmp = tempdir()
 unlink(thrane_tmp, recursive=TRUE)
 dir.create(thrane_tmp)
 lk='https://github.com/FridleyLab/spatialGE_Data/raw/refs/heads/main/melanoma_thrane.zip?download='
-download.file(lk, destfile=paste0(thrane_tmp, '/', 'melanoma_thrane.zip'), mode='wb')
-zip_tmp = list.files(thrane_tmp, pattern='melanoma_thrane.zip$', full.names=TRUE)
-unzip(zipfile=zip_tmp, exdir=thrane_tmp)
-# Generate the file paths to be passed to the STlist function
-count_files <- list.files(paste0(thrane_tmp, '/melanoma_thrane'),
-                          full.names=TRUE, pattern='counts')
-coord_files <- list.files(paste0(thrane_tmp, '/melanoma_thrane'),
-                          full.names=TRUE, pattern='mapping')
-clin_file <- list.files(paste0(thrane_tmp, '/melanoma_thrane'),
-                        full.names=TRUE, pattern='clinical')
-# Create STlist
-library('spatialGE')
-melanoma <- STlist(rnacounts=count_files[c(1,2)],
-                   spotcoords=coord_files[c(1,2)],
-                   samples=clin_file) # Only first two samples
-cp <- plot_counts(melanoma, data_type='raw', plot_type=c('violin', 'box'))
-ggpubr::ggarrange(plotlist=cp)
+tryCatch({ # In case data is not available from network
+  download.file(lk, destfile=paste0(thrane_tmp, '/', 'melanoma_thrane.zip'), mode='wb')
+  #' zip_tmp = list.files(thrane_tmp, pattern='melanoma_thrane.zip$', full.names=TRUE)
+  unzip(zipfile=zip_tmp, exdir=thrane_tmp)
+  # Generate the file paths to be passed to the STlist function
+  count_files <- list.files(paste0(thrane_tmp, '/melanoma_thrane'),
+                            full.names=TRUE, pattern='counts')
+  coord_files <- list.files(paste0(thrane_tmp, '/melanoma_thrane'),
+                            full.names=TRUE, pattern='mapping')
+  clin_file <- list.files(paste0(thrane_tmp, '/melanoma_thrane'),
+                          full.names=TRUE, pattern='clinical')
+  # Create STlist
+  library('spatialGE')
+  melanoma <- STlist(rnacounts=count_files,
+                     spotcoords=coord_files,
+                     samples=clin_file)
+  cp <- plot_counts(melanoma, data_type='raw', plot_type=c('violin', 'box'))
+  ggpubr::ggarrange(plotlist=cp)
+}, error = function(e) {
+  message("Could not run example. Are you connected to the internet?")
+  return(NULL)
+})
 }
 
 }

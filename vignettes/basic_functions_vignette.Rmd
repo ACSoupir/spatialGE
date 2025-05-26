@@ -70,14 +70,23 @@ knitr::include_graphics("img/dir_structure.png")
 ```
 
 
-In this tutorial, data will be deposited in a temporary directory. However, the download path can be changed within the following code block:
+In this tutorial, data will be deposited in a temporary directory. The data is downloaded from this link:
 
-```{r data_download}
+```{r data_download1}
+lk='https://github.com/FridleyLab/spatialGE_Data/raw/refs/heads/main/tnbc_bassiouni.zip?download='
+```
+
+```{r check-internet, echo=FALSE, message=FALSE, include=FALSE}
+net_check = curl::has_internet()
+```
+
+The following code block puts the data in the temporary directory:
+
+```{r data_download2, eval=net_check}
 visium_tmp = tempdir()
 unlink(visium_tmp, recursive=TRUE)
 dir.create(visium_tmp)
-download.file('https://github.com/FridleyLab/spatialGE_Data/raw/refs/heads/main/tnbc_bassiouni.zip?download=', 
-              destfile=paste0(visium_tmp, '/', 'tnbc_bassiouni.zip'), mode='wb')
+download.file(lk, destfile=paste0(visium_tmp, '/', 'tnbc_bassiouni.zip'), mode='wb')
 zip_tmp = list.files(visium_tmp, pattern='tnbc_bassiouni.zip$', full.names=TRUE)
 unzip(zipfile=zip_tmp, exdir=visium_tmp)
 ```
@@ -89,44 +98,44 @@ In `spatialGE`, raw and processed data are stored in an ***STlist*** (S4 class o
 Additionally, we will input meta data associated with each sample. The meta data is provided in the form of a comma-delimited file. We have extracted some of the clinical meta data for the eight samples from the original publication and saved it as part of the `spatialGE` package. The user is encouraged to look at the structure of this file by downloading it from the [spatialGE_Data GitHub repository](https://github.com/FridleyLab/spatialGE_Data). The most important aspect when constructing this file is that the sample names are in the first column, and they match the names of the folders containing the data:
 
 
-```{r extrenal_figs2, echo=FALSE, fig.align='center'}
+```{r extrenal_figs2, echo=FALSE, fig.align='center', eval=net_check}
 knitr::include_graphics("img/metadata_file.png")
 ```
 
 
 From the temporary directory, we can use R to generate the file paths to be passed to the `STlist` function:
 
-```{r data_fpaths}
+```{r data_fpaths, eval=net_check}
 visium_folders <- list.dirs(paste0(visium_tmp, '/tnbc_bassiouni'), full.names=TRUE, recursive=FALSE)
 ```
 
 The meta data can be accessed directly from the `spatialGE` package installed in the computer like so:
 
-```{r data_fpaths2}
+```{r data_fpaths2, eval=net_check}
 clin_file <- list.files(paste0(visium_tmp, '/tnbc_bassiouni'), full.names=TRUE, recursive=FALSE, pattern='clinical')
 ```
 
 We can load the files into an STlist using this command:
 
-```{r create_stlist, warning=F}
+```{r create_stlist, warning=F, eval=net_check}
 tnbc <- STlist(rnacounts=visium_folders, samples=clin_file, cores=2)
 ```
 
 The `tnbc` object is an STlist that contains the count data, spot coordinates, and clinical meta data.
 
-```{r call_stlist}
+```{r call_stlist, eval=net_check}
 tnbc
 ```
 
 As observed, by calling the `tnbc` object, information on the number of spots and genes per sample is displayed. For count statistics, the `summarize_STlist` function can be used:
 
-```{r count_stats}
+```{r count_stats, eval=net_check}
 summarize_STlist(tnbc)
 ```
 
 The minimum number of counts per spot is 42, which seems low. We can look at the distribution of counts and genes per spot using the `distribution_plots` function:
 
-```{r count_dstr}
+```{r count_dstr, eval=net_check}
 cp <- distribution_plots(tnbc, plot_type='violin', plot_meta='total_counts')
 cp[['total_counts']]
 ```
@@ -135,7 +144,7 @@ Now, let us remove spots with low counts by keeping only those spots with at lea
 
 We run this filter with the `filter_data` function:
 
-```{r filter_chunk}
+```{r filter_chunk, eval=net_check}
 tnbc <- filter_data(tnbc, spot_minreads=5000, spot_mingenes=1000, spot_maxreads=150000)
 
 cp2 <- distribution_plots(tnbc, plot_type='violin', plot_meta='total_counts')
@@ -146,19 +155,19 @@ cp2[['total_counts']]
 
 The functions `pseudobulk_samples` and `pseudobulk_pca_plot` are the initial steps to obtain a quick snapshot of the variation in gene expression among samples. The function `pseudobulk_samples` creates (pseudo) "bulk" RNAseq data sets by combining all counts from each sample. Then, it log transforms the "pseudo bulk" RNAseq counts and runs a Principal Component Analysis (PCA). Note that the spatial coordinate information is not considered here, which is intended only as an exploratory analysis analysis. The `max_var_genes` argument is used to specify the maximum number of genes used for computation of PCA. The genes are selected based on their standard deviation across samples.
 
-```{r pseudobulk}
+```{r pseudobulk, eval=net_check}
 tnbc <- pseudobulk_samples(tnbc, max_var_genes=5000)
 ```
 
 In this case, we apply the function to look for agreement between samples from the same patient: It is expected that tissue slices from the same patient are more similar among them than tissue slices from other patients. The `pseudobulk_pca` allows to map a sample-level variable to the points in the PCA by including the name of the column from the sample metadata (`patient_id` in this example).
 
-```{r pca_chunk, fig.align='center'}
+```{r pca_chunk, fig.align='center', eval=net_check}
 pseudobulk_dim_plot(tnbc, plot_meta='patient_id')
 ```
 
 Users can also generate a heatmap from pseudobulk counts by calling the `pseudobulk_heatmap` function, which also requires prior use of the `pseudobulk_samples` function. The number of variable genes to show can be controlled via the `hm_display_genes` argument.
 
-```{r heatmap_chunk, fig.align='center'}
+```{r heatmap_chunk, fig.align='center', eval=net_check}
 hm_p <- pseudobulk_heatmap(tnbc, plot_meta='patient_id', hm_display_genes=30)
 ```
 
@@ -166,7 +175,7 @@ hm_p <- pseudobulk_heatmap(tnbc, plot_meta='patient_id', hm_display_genes=30)
 
 Many transformation methods are available for RNAseq count data. In `spatialGE`, the function `transform_data` applies log-transformation to the counts, after library size normalization performed on each sample separately. Similar to [Seurat](https://satijalab.org/seurat/reference/normalizedata), it applies a scaling factor (`scale_f=10000` by default).
 
-```{r norm_chunk}
+```{r norm_chunk, eval=net_check}
 tnbc <- transform_data(tnbc, method='log', cores=2)
 ```
 
@@ -178,7 +187,7 @@ After data transformation, expression of specific genes can be visualized using 
 
 Let's produce a quilt plot for the genes *NDRG1* and *IGKC* (hypoxia and B-cell markers, respectively), for sample number 1 of patient 14 (`samples=sample_094c`).
 
-```{r genequilt_chunk}
+```{r genequilt_chunk, eval=net_check}
 quilts1 <- STplot(tnbc, 
                   genes=c('NDRG1', 'IGKC'), 
                   samples='sample_094c', 
@@ -188,7 +197,7 @@ quilts1 <- STplot(tnbc,
 
 Because `spatialGE` functions output lists of ggplot objects, we can plot the results side-by-side using functions such as `ggarrange()`:
 
-```{r genequilt_chunk2, fig.align='center'}
+```{r genequilt_chunk2, fig.align='center', eval=net_check}
 ggpubr::ggarrange(plotlist=quilts1, nrow=1, ncol=2, legend='bottom')
 ```
 
@@ -200,7 +209,7 @@ We can predict a smooth gene expression surface for each sample. In `spatialGE`,
 
 The function `gene_interpolation` performs kriging of gene expression via the `fields` package. We specify that kriging will be performed for two of the spatial samples (`samples=c('sample_094c', 'sample_117e')`):
 
-```{r genekrige_chunk}
+```{r genekrige_chunk, eval=net_check}
 tnbc <- gene_interpolation(tnbc, 
                            genes=c('NDRG1', 'IGKC'),
                            samples=c('sample_094c', 'sample_117e'), cores=2)
@@ -208,7 +217,7 @@ tnbc <- gene_interpolation(tnbc,
 
 Generating gene expression surfaces can be time consuming. The finer resolution to which the surface is to be predicted (`ngrid` argument), the longer the time it takes. The execution time also depends on the number of spots/cells. The surfaces can be visualized using the `STplot_interpolation()` function:
 
-```{r plotkrige_chunk1, fig.align='center'}
+```{r plotkrige_chunk1, fig.align='center', eval=net_check}
 kriges1 <- STplot_interpolation(tnbc,
                                 genes=c('NDRG1', 'IGKC'),
                                 samples='sample_094c')
@@ -219,7 +228,7 @@ By looking at the transcriptomic surfaces of the two genes, it is easier to dete
 
 If tissue images were uploaded to the STlist (`tissue_hires_image.png.gz`), it can be displayed for comparison using the `plot_image` function:
 
-```{r plot_tissue}
+```{r plot_tissue, eval=net_check}
 ip = plot_image(tnbc, samples='sample_094c')
 
 ip[['image_sample_094c']]
@@ -231,7 +240,7 @@ Detecting tissue compartments or niches is an important part of the study of the
 
 We'll try several weights to see it's effect on the cluster assignments:
 
-```{r clustespots_chunk, warning=F, message=F}
+```{r clustespots_chunk, warning=F, message=F, eval=net_check}
 tnbc <- STclust(tnbc, 
                 ks='dtc', 
                 ws=c(0, 0.025, 0.05, 0.2), cores=2)
@@ -239,7 +248,7 @@ tnbc <- STclust(tnbc,
 
 Results of clustering can be plotted via the `STplot` function:
 
-```{r plotclustspots_chunk, fig.align='center'}
+```{r plotclustspots_chunk, fig.align='center', eval=net_check}
 cluster_p <- STplot(tnbc, 
                     samples='sample_094c', 
                     ws=c(0, 0.025, 0.05, 0.2),
@@ -253,7 +262,7 @@ We can see that from `w=0` and `w=0.05`, we can only detect two tissue niches. A
 
 To explore the relationship between a clinical (sample-level) variable of interest and the level of gene expression spatial uniformity within a sample, we can use the `SThet()` function:
 
-```{r sthet_chunk}
+```{r sthet_chunk, eval=net_check}
 tnbc <- SThet(tnbc, 
               genes=c('NDRG1', 'IGKC'),
               method='moran', cores=2)
@@ -261,7 +270,7 @@ tnbc <- SThet(tnbc,
 
 The `SThet` function calculates the Moran's I statsitic (or Geary's C) to measure the level of spatial heterogeneity in the expression of the genes ( *NDRG1*, *IGKC*). The estimates can be compared across samples using the function `compare_SThet()`
 
-```{r clinplot_chunk, fig.align='center'}
+```{r clinplot_chunk, fig.align='center', eval=net_check}
 p <- compare_SThet(tnbc, 
                    samplemeta='overall_survival_days', 
                    color_by='patient_id',
@@ -276,7 +285,7 @@ The calculation of spatial statistics with `SThet` and and multi-sample comparis
 
 The computed statistics are stored in the STlist for additional analysis/plotting that the user may want to complete. The statistics value can be accessed as a data frame using the `get_gene_meta` function:
 
-```{r stats_slot}
+```{r stats_slot, eval=net_check}
 get_gene_meta(tnbc, sthet_only=TRUE)
 ```
 
@@ -288,7 +297,7 @@ get_gene_meta(tnbc, sthet_only=TRUE)
 
 See the table below for a simplistic interpretation of the spatial autocorrelation statistics calculated in `spatialGE`:
 
-```{r sphet_table, echo=F}
+```{r sphet_table, echo=F, eval=net_check}
 library('magrittr') # Use of pipe operator
 sphet_info <- tibble::tibble(
   "Statistic"=c('Moran’s I', 'Geary’s C'),
@@ -306,7 +315,7 @@ kableExtra::add_footnote(kbl_t,
 
 To better understand how the Moran's I and Geary's C statistics quantify spatial heterogeneity, tissue can be simulated using the `scSpatialSIM` and `spatstat` packages. Also `tidyverse` and `janitor` for some data manipulation.
 
-```{r load_simpkg, message=F}
+```{r load_simpkg, message=F, eval=net_check}
 library('rpart')
 library('spatstat')
 library('scSpatialSIM')
@@ -318,14 +327,14 @@ The `sc.SpatialSIM` package uses spatial point processes to simulate the locatio
 
 The first step is to create a `spatstat` observation window:
 
-```{r tissue_sim_1, warning=F, message=F}
+```{r tissue_sim_1, warning=F, message=F, eval=net_check}
 wdw <- owin(xrange=c(0, 3), yrange=c(0, 3))
 sim_visium <- CreateSimulationObject(sims=1, cell_types=1, window=wdw)
 ```
 
 Next, the `sc.SpatialSIM` is used to generate the spatial point process (positions of the spots) within the observation window. Then, assignments of spots to tissue domains are simulated and visualized:
 
-```{r tissue_sim_2, warning=F, fig.height=4, fig.width=6}
+```{r tissue_sim_2, warning=F, fig.height=4, fig.width=6, eval=net_check}
 # Generate point process
 # Then, simulate tissue compartments
 set.seed(12345)
@@ -342,7 +351,7 @@ Now, the simulated tissue domain assignments are extracted from the `SpatSimObj`
 - Spots with high expression of "gene_2" (expression = 1) are equally separated from spots with low expression (expression = 0.1). This pattern is highly unlikely in a biological tissue. It is expected this pattern yields a Moran's I < 0 and a Geary's > 1.
 - Expression of "gene_3" results from randomly assigning expression of "gene_2" across the entire tissue. This pattern should result in Moran's I closer to 0 and Geary's C closer to 1.
 
-```{r tissue_sim_3, warning=F}
+```{r tissue_sim_3, warning=F, eval=net_check}
 # Extract tissue assignments from the `SpatSimObj` object
 # Simulate expression of 'gene_1'
 sim_visium_df <- sim_visium@`Spatial Files`[[1]] %>%
@@ -366,7 +375,7 @@ sim_visium_df[['gene_3']] <- sample(sim_visium_df[['gene_2']])
 
 To visualize the simulated expression and run `SThet`, an STlist is created:
 
-```{r tissue_sim_4, warning=F, fig.height=4}
+```{r tissue_sim_4, warning=F, fig.height=4, eval=net_check}
 # Extract simulated expression data
 sim_expr <- sim_visium_df %>% 
   add_column(libname=paste0('spot', seq(1:nrow(.)))) %>%
@@ -390,7 +399,7 @@ ggpubr::ggarrange(plotlist=ps, ncol=3)
 
 As expected, simulated expression of "gene_1" is aggregated (i.e., clustered, red spots concentrated towards the center of the tissue). This result was intently obtained by setting the simulation parameters to  `xmin=2`, `xmax=3`, `ymin=2`, `ymax=3` in `sc.SpatialSIM`.
 
-```{r tissue_sim_5, warning=F, message=F}
+```{r tissue_sim_5, warning=F, message=F, eval=net_check}
 # The `SThet` function requires normalized data
 simulated <- transform_data(simulated, cores=2)
 
