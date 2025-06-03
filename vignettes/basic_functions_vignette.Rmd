@@ -76,19 +76,27 @@ In this tutorial, data will be deposited in a temporary directory. The data is d
 lk='https://github.com/FridleyLab/spatialGE_Data/raw/refs/heads/main/tnbc_bassiouni.zip?download='
 ```
 
-```{r check-internet, echo=FALSE, message=FALSE, include=FALSE}
-net_check = curl::has_internet()
-```
+The following code block creates a temporary directory:
 
-The following code block puts the data in the temporary directory:
-
-```{r data_download2, eval=net_check}
+```{r temp_dir}
 visium_tmp = tempdir()
 unlink(visium_tmp, recursive=TRUE)
 dir.create(visium_tmp)
-download.file(lk, destfile=paste0(visium_tmp, '/', 'tnbc_bassiouni.zip'), mode='wb')
-zip_tmp = list.files(visium_tmp, pattern='tnbc_bassiouni.zip$', full.names=TRUE)
-unzip(zipfile=zip_tmp, exdir=visium_tmp)
+```
+
+The data will be downloaded to the temporary directory. The data is compressed in a 
+zip file, which will be unzipped into a sub-directory called `tnbc_bassiouni`:
+
+```{r data_download2}
+tryCatch({ # In case data is not available from network
+  download.file(lk, destfile=paste0(visium_tmp, '/', 'tnbc_bassiouni.zip'), mode='wb')
+  zip_tmp = list.files(visium_tmp, pattern='tnbc_bassiouni.zip$', full.names=TRUE)
+  unzip(zipfile=zip_tmp, exdir=thrane_tmp)
+  net_check <<- TRUE
+}, error = function(e) {
+  message("Could not download data. Are you connected to the internet?")
+  net_check <<- FALSE
+})
 ```
 
 ## Creating an STList (Spatial Transcriptomics List)

@@ -1,3 +1,5 @@
+# spatialGE 1.2.2
+
 # spatialGE 1.2.1
 
 * Added C++ code to speed up `STenrich` computations (Thank you, Dr. Soupir!).
