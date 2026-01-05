@@ -1,3 +1,11 @@
 .Rproj.user
 src/*.o
 src/*.so
+
+# Conda environment
+spatialge_env/
+.conda/
+env/
+
+# Test data
+tests/testthat/data/

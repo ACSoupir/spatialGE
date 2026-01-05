@@ -1,0 +1,30 @@
+name: spatialge_env
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-base
+  - r-devtools
+  - r-testthat
+  - r-rmarkdown
+  - r-sf
+  - r-spdep
+  - r-hdf5r
+  - r-pkgdown
+  - r-rcpp
+  - r-rcppeigen
+  - r-rcppprogress
+  - bioconductor-biocparallel
+  - bioconductor-complexheatmap
+  - gdal
+  - geos
+  - proj
+  - hdf5
+  - libxml2
+  - cairo
+  - libpng
+  - freetype
+  - fribidi
+  - harfbuzz
+  - pandoc
