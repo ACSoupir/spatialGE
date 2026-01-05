@@ -38,5 +38,5 @@ test_that("load_images handles missing images gracefully", {
     # It seems to not warn or error, just return object or print message
     res_img <- load_images(st_obj, images = "dummy.jpg")
     expect_true(is(res_img, "STlist"))
-    expect_warning(plot_image(st_obj), "No tissue images available")
+    expect_error(plot_image(st_obj), "No tissue images available")
 })
