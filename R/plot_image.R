@@ -45,7 +45,7 @@ plot_image = function(x=NULL, samples=NULL){
   rp_list <- list()
 
   if(length(samples) < 1){
-    warning('No tissue images available for the samples in this STlist.')
+    stop('No tissue images available for the samples in this STlist.')
   } else{
     # Loop through each normalized count matrix.
     for (i in samples){
