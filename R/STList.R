@@ -1,102 +1,120 @@
 ##
 #' @title STlist: Creation of STlist objects for spatial transcriptomics analysis
-#' @description Creates an STlist object from one or multiple spatial transcriptomic samples.
+#' @description
+#' `r lifecycle::badge("stable")`
+#' 
+#' Creates an STlist object from one or multiple spatial transcriptomic samples.
 #' @details
 #' Objects of the S4 class STlist are the starting point of analyses in **`spatialGE`**.
+#' 
+#' \strong{Note:} This is the new modular implementation of `STList` created in version 2.0.0. 
+#' For reproducibility, the previous version is available as `STList_legacy`.
+#' 
 #' The STlist contains data from one or multiple samples (i.e., tissue slices), and
 #' results from most `spatialGE`'s functions are stored within the object.
-#' \itemize{
-#' \item Raw gene counts and spatial coordinates. Gene count data have genes in rows and
-#' sampling units (e.g., cells, spots) in columns. Spatial coordinates have
-#' sampling units in rows and three columns: sample unit IDs, Y position, and X position.
-#' \item Visium outputs from *Space Ranger*. The Visium directory must have the directory
-#' structure resulting from `spaceranger count`, with either a count matrix represented in
-#' MEX files or a h5 file. The directory should also contain a `spatial` sub-directory,
-#' with the spatial coordinates (`tissue_positions_list.csv`), and
-#' optionally the high resolution tissue image and scaling factor file `scalefactors_json.json`.
-#' \item Xenium outputs from *Xenium Ranger*. The Xenium directory must have the directory
-#' structure resulting from the `xeniumranger` pipeline, with either a cell-feature matrix
-#' represented in MEX files or a h5 file. The directory should also contain a parquet file,
-#' with the spatial coordinates (`cells.parquet`).
-#' \item CosMx-SMI outputs. Two files are required to process SMI outputs: The `exprMat` and
-#' `metadata` files. Both files must contain the "fov" and "cell_ID" columns. In addition,
-#' the `metadata` files must contain the "CenterX_local_px" and "CenterY_local_px" columns.
-#'  \item Seurat object (V4). A Seurat V4 object produced via `Seurat::Load10X_Spatial`.
-#' }
-#' Optionally, the user can input a path to a file containing a table of sample-level
-#' metadata (e.g., clinical outcomes, tissue type, age). This sample metadata file
-#' should contain sample IDs in the first column partially matching the file names of
-#' the count/coordinate file paths or Visium directories. _Note:_ The sample ID of a
-#' given sample cannot be a substring of the sample ID of another sample. For example,
-#' instead of using "tissue1" and "tissue12", use "tissue01" and "tissue12".
-#'
-#' The function uses parallelization if run in a Unix system. Windows users
-#' will experience longer times depending on the number of samples.
-#'
-#' @param rnacounts the count data which can be provided in one of these formats:
-#' \itemize{
-#' \item File paths to comma- or tab-delimited files containing raw gene counts, one file
-#' for each spatial sample. The first column contains gene names and subsequent columns
-#' contain the expression data for each cell/spot. Duplicate gene names will be
-#' modified using `make.unique`. Requires `spotcoords` and `samples`.
-#' \item File paths to Visium output directories (one per spatial sample). The directory
-#' must follow the structure resulting from `spaceranger count`. The directory contains
-#' the `.h5` and `spatial` sub-directory. If no `.h5` file is available, sparse
-#' matrices (MEX) from `spaceranger count`. In that case a second sub-directory
-#' called `filtered_feature_bc_matrix` should contain contain the `barcodes.tsv.gz`,
-#' `features.tsv.gz`, and `matrix.mtx.gz` files. The `spatial` sub-directory minimally
-#' contains the coordinates (`tissue_positions_list.csv`), and optionally the high
-#' resolution PNG image and accompanying scaling factors (`scalefactors_json.json`).
-#' Requires `samples`.
-#' #' \item File paths to Xenium output directories (one per spatial sample). The directory
-#' must follow the structure resulting from the `xeniumranger` pipeline. The directory
-#' contains the `.h5` or sparse matrices (MEX). In that case a second sub-directory
-#' called `cell_feature_matrix` should contain contain the `barcodes.tsv.gz`,
-#' `features.tsv.gz`, and `matrix.mtx.gz` files. The coordinates must be available
-#' in the `cells.parquet`. Requires `samples`.
-#' \item The `exprMat` file for each slide of a CosMx-SMI output. The file must contain
-#' the "fov" and "cell_ID" columns. The `STlist` function will separate data from each
-#' FOV, since analysis in spatialGE is conducted at the FOV level. Requires `samples` and
-#' `spotcoords`.
-#' \item Seurat object (V4). A Seurat V4 object produced via `Seurat::Load10X_Spatial`.
-#' Multiple samples are allowed as long as they are stored as "slices" in the Seurat object.
-#' Does not require `samples` as sample names are taken from `names(seurat_obj@images)`
-#' \item A named list of data frames with raw gene counts (one data frame per spatial
-#' sample). Requires `spotcoords`. Argument `samples` only needed when a file path to
-#' sample metadata is provided.
-#' }
-#' @param spotcoords the cell/spot coordinates. Not required if inputs are Visium or
-#' Xenium (spaceranger or xeniumranger outputs).
-#' \itemize{
-#' \item File paths to comma- or tab-delimited files containing cell/spot coordinates, one
-#' for each spatial sample. The files must contain three columns: cell/spot IDs, Y positions, and
-#' X positions. The cell/spot IDs must match the column names for each cells/spots (columns) in
-#' the gene count files. Requires `samples` and `rnacounts`.
-#' \item The `metadata` file for each slide of a CosMx-SMI output. The file must contain
-#' the "fov", "cell_ID", "CenterX_local_px", and "CenterY_local_px" columns. The `STlist`
-#' function will separate data from each FOV, since analysis in spatialGE is conducted at
-#' the FOV level. Requires `samples` and `rnacounts`.
-#' \item A named list of data frames with cell/spot coordinates. The list names must
-#' match list names of the gene counts list
-#' }
-#' @param samples the sample names/IDs and (optionally) metadata associated with
-#' each spatial sample.
-#' The following options are available for `samples`:
-#' \itemize{
-#' \item A vector with sample names, which will be used to match gene the counts and
-#' cell/spot coordinates file paths. A sample name must not match file
-#' paths for two different samples. For example, instead of using "tissue1" and
-#' "tissue12", use "tissue01" and "tissue12".
-#' \item A path to a file containing a table with metadata. This file is a comma- or
-#' tab-separated table with one sample per row and sample names/IDs in the first
-#' column. Subsequent columns may contain variables associated with each spatial sample
-#' }
+#' 
+#' @param rnacounts the count data which can be provided in various formats (see \code{\link{STList_legacy}} for detailed legacy format descriptions, or new modular documentation).
+#' @param spotcoords the cell/spot coordinates. Not required if inputs are Visium or Xenium.
+#' @param samples the sample names/IDs and (optionally) metadata.
 #' @param cores integer indicating the number of cores to use during parallelization.
-#' If NULL, the function uses half of the available cores at a maximum. The parallelization
-#' uses `parallel::mclapply` and works only in Unix systems
-#' @param verbose logical, whether to print text to console
-#' @return an STlist object containing the counts and coordinates, and optionally
-#' the sample metadata, which can be used for downstream analysis with `spatialGE`
+#' @param verbose logical, whether to print text to console.
+#' @return an STlist object containing the counts and coordinates, and optionally sample metadata.
+#' 
+#' @seealso \code{\link{STList_legacy}}
+#' @export STlist
+STlist <- function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL, verbose=TRUE) {
+  
+  # 1. Detect Sources
+  input_sources <- detect_input_source(rnacounts, spotcoords, samples)
+  
+  # 2. Iterate and Ingest
+  counts_list <- list()
+  coords_list <- list()
+  
+  for (i in seq_along(input_sources)) {
+    src <- input_sources[[i]]
+    if (verbose) message("Ingesting source ", i, ": Type=", src$type, " Format=", src$format)
+    
+    res <- dispatch_ingest(src)
+    
+    # Handle Result
+    # If generic-list, res is a list of results.
+    # Otherwise res is a single list(counts=, coords=)
+    
+    if (src$type == "list") {
+        # Merge the lists
+        counts_list <- c(counts_list, lapply(res, `[[`, "counts"))
+        coords_list <- c(coords_list, lapply(res, `[[`, "coords"))
+    } else {
+        # Result could be Single (counts/coords) or Batch (list of named single results)
+        # CosMx returns a batch named by "Slide_FOV"
+        
+        # Check structure: Does res have "counts" and "coords" directly?
+        is_single <- "counts" %in% names(res) && "coords" %in% names(res)
+        
+        if (is_single) {
+            # Single Sample Logic
+            sname <- src$samples
+            if (is.null(sname)) {
+                if (is.character(src$rna)) sname <- basename(src$rna)
+                else sname <- paste0("Sample_", i)
+            }
+            counts_list[[sname]] <- res$counts
+            coords_list[[sname]] <- res$coords
+        } else {
+            # Batch Logic (e.g. CosMx FOVs, Seurat)
+            # res is a list of list(counts=, coords=)
+            # Names of res should be the sample names
+            for (res_name in names(res)) {
+                counts_list[[res_name]] <- res[[res_name]]$counts
+                coords_list[[res_name]] <- res[[res_name]]$coords
+            }
+        }
+    }
+  }
+  
+  # 3. Post-Processing using Legacy Logic
+  if(verbose) cat("Matching gene expression and coordinate data...\n")
+  proc_lists <- process_lists(counts_df_list=counts_list, coords_df_list=coords_list)
+  
+  # 4. Create STList Object
+  sample_meta <- tibble::tibble(sample_name = names(proc_lists[['counts']]))
+  sample_meta$sample_name <- as.character(sample_meta$sample_name)
+  
+  # TODO: Detect platform better in future
+  st_obj <- methods::new("STlist", 
+      counts = proc_lists[['counts']], 
+      spatial_meta = proc_lists[['coords']],
+      sample_meta = sample_meta,
+      gene_meta = list(),
+      tr_counts = list(),
+      gene_krige = list(),
+      misc = list(platform="generic", 
+                  sp_images=list(), 
+                  image_scaling=list(),
+                  sthet=list())
+  )
+  
+  if(verbose) cat("Completed STlist!\n")
+  return(st_obj)
+}
+
+##
+#' @title STlist (Legacy): Creation of STlist objects for spatial transcriptomics analysis
+#' @description
+#' `r lifecycle::badge("superseded")`
+#' 
+#' Creates an STlist object from one or multiple spatial transcriptomic samples.
+#' @details
+#' \strong{This function is superseded by the new `STList` implementation in version 2.0.0.} 
+#' It is preserved here for reproducibility of older workflows. Please use `STList` for new projects.
+#' 
+#' @param rnacounts the count data.
+#' @param spotcoords the cell/spot coordinates.
+#' @param samples the sample names/IDs.
+#' @param cores integer indicating the number of cores to use.
+#' @param verbose logical, whether to print text to console.
+#' @return an STlist object.
 #'
 #' @examples
 #' \donttest{
@@ -129,12 +147,15 @@
 #' })
 #' }
 #'
-#' @export STlist
+#' @export STList_legacy
+#' @name STList_legacy
+#' @aliases STList_legacy
+#' @seealso \code{\link{STList}}
 #'
 #' @import Matrix
 #' @importFrom magrittr %>%
 #
-STlist = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL, verbose=TRUE){
+STList_legacy = function(rnacounts=NULL, spotcoords=NULL, samples=NULL, cores=NULL, verbose=TRUE){
   # Check input type.
   input_check = detect_input(rnacounts=rnacounts, spotcoords=spotcoords, samples=samples)
   input_rnacounts = detect_input_rnacounts(rnacounts)

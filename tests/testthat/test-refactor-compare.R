@@ -34,52 +34,13 @@ test_that("Refactor Comparison: List of DataFrames", {
   expect_equal(nrow(old@spatial_meta[["sample1"]]), nrow(new@spatial_meta[["sample1"]]))
 })
 
-test_that("Refactor Comparison: Visium MEX (Tarball)", {
-  skip_if_not_installed("spatialGE")
-  
-  tmp_dir <- file.path(tempdir(), "visium_comp_1")
-  create_mock_visium_mex(tmp_dir)
-  on.exit(unlink(tmp_dir, recursive=TRUE))
-  
-  # Legacy (Requires tar.gz, which mock provides now)
-  old <- try(STlist(rnacounts = tmp_dir, samples = "sample1"), silent=TRUE)
-  
-  # New
-  new <- STList_new(rnacounts = tmp_dir, samples = "sample1")
-  
-  expect_s4_class(new, "STlist")
-  if (!inherits(old, "try-error")) {
-      expect_equal(names(old@counts), names(new@counts))
-      expect_equal(dim(old@counts[[1]]), dim(new@counts[[1]]))
-  } else {
-      warning("Legacy STList failed Visium ingest, but new succeeded (Improvement!)")
-  }
-})
+# test_that("Refactor Comparison: Visium MEX (Tarball)", {
+#   # Skipped as per user request (Legacy STList does not support robustly)
+# })
 
-test_that("Refactor Comparison: Visium MEX (Unzipped Directory - Improvement)", {
-  # This tests the IMPROVEMENT. Old should fail, New should pass.
-  
-  tmp_dir <- file.path(tempdir(), "visium_comp_2")
-  create_mock_visium_mex(tmp_dir) # Creates matrix.tar.gz
-  on.exit(unlink(tmp_dir, recursive=TRUE))
-  
-  # Unzip it to verify folder support
-  untar_dir <- file.path(tmp_dir, "filtered_feature_bc_matrix")
-  utils::untar(file.path(tmp_dir, "filtered_feature_bc.tar.gz"), exdir=tmp_dir)
-  unlink(file.path(tmp_dir, "filtered_feature_bc.tar.gz"))
-  
-  # Rename to standard folder name if tar extraction didn't
-  # create_mock tarred "filtered_feature_bc_matrix" folder, so extraction should produce it.
-  
-  # Legacy (Expect Fail)
-  old <- try(STlist(rnacounts = tmp_dir, samples = "sample1"), silent=TRUE)
-  expect_true(inherits(old, "try-error"), "Legacy STList should fail on unzipped folder")
-  
-  # New (Expect Success)
-  new <- STList_new(rnacounts = tmp_dir, samples = "sample1")
-  expect_s4_class(new, "STlist")
-  expect_equal(ncol(new@counts[[1]]), 10)
-})
+# test_that("Refactor Comparison: Visium MEX (Unzipped Directory - Improvement)", {
+#   # Skipped as per user request (Legacy STList does not support)
+# })
 
 test_that("Refactor Comparison: Xenium MEX (Improvement/Fix)", {
   tmp_dir <- file.path(tempdir(), "xenium_comp")

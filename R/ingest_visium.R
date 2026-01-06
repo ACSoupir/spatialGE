@@ -44,6 +44,47 @@ dispatch_ingest.source_visium <- function(source) {
   stop("Could not find valid Visium H5 or MEX data in: ", path)
 }
 
+#' Ingest Generic H5 Details (Visium or Xenium or 10x)
+#' @param source InputSource object of type 'h5_10x'
+#' @export
+dispatch_ingest.source_h5_10x <- function(source) {
+  path <- source$rna
+  # H5 file path detected
+  
+  # Heuristic 1: Check companion files (coordinates) to distinguish
+  # If coords provided, check extension or content
+  is_xenium <- FALSE
+  is_visium <- FALSE
+  
+  cpath <- source$coords
+  if(!is.null(cpath)) {
+      if(grepl("cells\\.parquet$|cells\\.csv(\\.gz)?$", cpath)) is_xenium <- TRUE
+      if(grepl("tissue_positions.*\\.csv", cpath)) is_visium <- TRUE
+  }
+  
+  if(!is_xenium && !is_visium) {
+     # Check siblings
+     parent <- dirname(path)
+     if(length(list.files(parent, pattern="cells\\.parquet|cells\\.csv")) > 0) is_xenium <- TRUE
+     if(length(list.files(parent, pattern="tissue_positions.*\\.csv")) > 0) is_visium <- TRUE
+  }
+  
+  # If still ambiguous, check filename
+  if(!is_xenium && !is_visium) {
+      if(grepl("cell_feature_matrix\\.h5$", path)) is_xenium <- TRUE
+      if(grepl("filtered_feature_bc_matrix\\.h5$|raw_feature_bc_matrix\\.h5$", path)) is_visium <- TRUE
+  }
+  
+  # Dispatch
+  # Note: ingest_xenium_h5 is available in package namespace (defined in ingest_xenium.R)
+  if(is_xenium) {
+      return(ingest_xenium_h5(path, source$coords, source$samples))
+  } else {
+      # Default to Visium (standard 10x H5)
+      return(ingest_visium_h5(path, source$coords, source$samples))
+  }
+}
+
 #' Internal H5 Reader
 ingest_visium_h5 <- function(h5_path, coords_path=NULL, sample_name=NULL) {
   # Logic adapted from import_visium_h5
@@ -100,9 +141,21 @@ ingest_visium_h5 <- function(h5_path, coords_path=NULL, sample_name=NULL) {
       # Try looking nearby
       candidates <- c(
           file.path(dirname(h5_path), "spatial", "tissue_positions_list.csv"),
-          file.path(dirname(dirname(h5_path)), "spatial", "tissue_positions_list.csv"),
-          list.files(dirname(dirname(h5_path)), pattern="tissue_positions.*\\.csv", recursive=TRUE, full.names=TRUE)
+          file.path(dirname(dirname(h5_path)), "spatial", "tissue_positions_list.csv")
       )
+      
+      # Also check for non-standard names (e.g. GSM prefix) in spatial dirs
+      # Check strictly inside 'spatial' folders if they exist
+      spatial_dir_1 <- file.path(dirname(h5_path), "spatial")
+      if(dir.exists(spatial_dir_1)) {
+        candidates <- c(candidates, list.files(spatial_dir_1, pattern="tissue_positions.*\\.csv", full.names=TRUE))
+      }
+      
+      spatial_dir_2 <- file.path(dirname(dirname(h5_path)), "spatial")
+      if(dir.exists(spatial_dir_2)) {
+        candidates <- c(candidates, list.files(spatial_dir_2, pattern="tissue_positions.*\\.csv", full.names=TRUE))
+      }
+      
       valid <- candidates[file.exists(candidates)]
       if(length(valid) > 0) coords_path <- valid[1]
   }

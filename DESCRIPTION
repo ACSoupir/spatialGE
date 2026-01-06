@@ -1,6 +1,6 @@
 Package: spatialGE
 Title: Visualization and Analysis of Spatial Heterogeneity in Spatially-Resolved Gene Expression
-Version: 1.2.2
+Version: 2.0.0
 Authors@R: c(
     person(given = "Oscar",
            family = "Ospina",
@@ -31,6 +31,7 @@ Copyright: ins/COPYRIGHT
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
+RdMacros: lifecycle
 RoxygenNote: 7.3.2
 Imports:
 	arrow,
@@ -53,6 +54,7 @@ Imports:
 	jpeg,
 	jsonlite,
 	khroma (>= 1.6.0),
+	lifecycle,
 	magrittr,
 	Matrix,
 	MASS,

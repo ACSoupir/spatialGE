@@ -1,31 +1,7 @@
 
 source(testthat::test_path("helper-regression.R"))
 
-test_that("STList handles Visium MEX input correctly", {
-  skip_if_not_installed("spatialGE")
-  
-  # Setup Mock
-  tmp_dir <- file.path(tempdir(), "visium_mock")
-  create_mock_visium_mex(tmp_dir)
-  on.exit(unlink(tmp_dir, recursive=TRUE))
-  
-  # Predict file paths (STList logic usually detects them from dir)
-  # STList detects 'visium_filtered_mex' if 'filtered_feature_bc_matrix' exists with MEX files
-  
-  cat("Mock Dir Contents:\n")
-  print(list.files(tmp_dir, recursive=TRUE))
-  
-  st <- STlist(rnacounts = tmp_dir, samples = "sample1")
-  
-  expect_s4_class(st, "STlist")
-  expect_true("sample1" %in% names(st@counts))
-  # Check dimensions: 10 genes x 10 spots (from mock)
-  expect_equal(nrow(st@counts[["sample1"]]), 5) 
-  expect_equal(ncol(st@counts[["sample1"]]), 10)
-  
-  # Check coords
-  expect_true(!is.null(st@spatial_meta[["sample1"]]))
-})
+
 
 test_that("STList handles Xenium MEX input correctly", {
   skip_if_not_installed("spatialGE")

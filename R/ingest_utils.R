@@ -1,6 +1,7 @@
 #' @title InputSource Class Definitions
 #' @description Defines structure for various input sources detected by DetectInput
 #' @keywords internal
+#' @name ingest_utils
 NULL
 
 #' Constructor for InputSource
