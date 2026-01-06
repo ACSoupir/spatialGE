@@ -9,8 +9,8 @@ test_that("load_images and plot_image work with real data", {
   sample_dir <- file.path(data_dir, "sample_092a")
   if(dir.exists(sample_dir)){
       # Create STlist
-      # For Visium, rnacounts is the dir
-      st_obj <- STlist(rnacounts = sample_dir, samples = "sample_092a")
+      # Use full stem to satisfy load_images regex (sample\. => stem.png)
+      st_obj <- STlist(rnacounts = sample_dir, samples = "GSM6433585_092A_tissue_hires_image")
       
       # Image path
       img_path <- file.path(sample_dir, "spatial", "GSM6433585_092A_tissue_hires_image.png")
@@ -18,7 +18,7 @@ test_that("load_images and plot_image work with real data", {
       
       # 1. Test load_images
       st_obj <- load_images(st_obj, images = img_path)
-      expect_true(!is.null(st_obj@misc[['sp_images']][['sample_092a']]))
+      expect_true(!is.null(st_obj@misc[['sp_images']][['GSM6433585_092A_tissue_hires_image']]))
       
       # 2. Test plot_image
       p_img <- plot_image(st_obj)

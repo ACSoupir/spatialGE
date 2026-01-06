@@ -135,8 +135,8 @@ read_mtx_safe <- function(path) {
       try(close(con_in), silent=TRUE) # explicit close for tidiness
       
       # Read text matrix from TEMP file (uncompressed)
-      return(Matrix::readMM(tmp_out))
+      return(as(Matrix::readMM(tmp_out), "CsparseMatrix"))
   } else {
-      return(Matrix::readMM(path))
+      return(as(Matrix::readMM(path), "CsparseMatrix"))
   }
 }

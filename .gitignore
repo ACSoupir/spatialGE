@@ -9,3 +9,4 @@ env/
 
 # Test data
 tests/testthat/data/
+tests/testthat/Rplots.pdf

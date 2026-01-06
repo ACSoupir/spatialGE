@@ -953,16 +953,27 @@ process_lists = function(counts_df_list, coords_df_list){
     # Get loop current name to be processed.
     name_i = names(counts_df_list)[i]
 
+    # Determine if sparse (no Gene column) or DF (Gene column 1)
+    is_sparse = inherits(counts_df_list[[name_i]], "sparseMatrix")
+    cols_to_check = colnames(counts_df_list[[name_i]])
+    if(!is_sparse) cols_to_check = cols_to_check[-1]
+
     # One of the test data sets has column names begin with a number. To avoid this to
     # become a problem for data sets with the same issue, will add an 'x', similar to what R would do
-    if(any(grepl("^[0-9]", colnames(counts_df_list[[name_i]])))){
-      colnames(counts_df_list[[name_i]])[-1] = paste0('x', colnames(counts_df_list[[name_i]][, -1]))
+    if(any(grepl("^[0-9]", cols_to_check))){
+      new_cols = paste0('x', cols_to_check)
+      if(is_sparse) colnames(counts_df_list[[name_i]]) = new_cols
+      else colnames(counts_df_list[[name_i]])[-1] = new_cols
+      
       # Make the same addition in coordinate data to match column names in count data
       coords_df_list[[name_i]][, 1] = paste0('x', coords_df_list[[name_i]][[1]])
+      
+      # Update cols_to_check
+      cols_to_check = new_cols
     }
 
     # Test that spot names are the same in both count and coordinate data frames.
-    if(length(setdiff(colnames(counts_df_list[[name_i]])[-1], unlist(coords_df_list[[name_i]][, 1]))) != 0){
+    if(length(setdiff(cols_to_check, unlist(coords_df_list[[name_i]][, 1]))) != 0){
       raise_err(err_code='error0002', samplename=name_i)
     }
 
